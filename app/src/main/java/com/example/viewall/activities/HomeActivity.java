@@ -12,8 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.viewall.R;
+import com.example.viewall.adapters.HomeAddSliderAdapter;
 import com.example.viewall.adapters.PopularVideoHomeAdapter;
+import com.example.viewall.utils.SharePrefrancClass;
 import com.google.android.material.navigation.NavigationView;
+import com.smarteist.autoimageslider.SliderView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -35,11 +38,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     /*RecyclerView recPopularVideoId;*/
     RecyclerView popularVideoRec;
     PopularVideoHomeAdapter popularVideoHomeAdapter;
+    SliderView imageSlider;
+    int myImageList[] = {R.drawable.addicon, R.drawable.banner2, R.drawable.banner1};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+//        Toast.makeText(HomeActivity.this, SharePrefrancClass.getInstance(HomeActivity.this).getPref("baseurl"), Toast.LENGTH_SHORT).show();
 
         Window window = getWindow();
         window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
@@ -49,6 +56,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle(null);
         toolbar.setSubtitle("");
+
+        imageSlider = findViewById(R.id.imageSlider);
+        imageSlider.setSliderAdapter(new HomeAddSliderAdapter(myImageList, HomeActivity.this));
+        imageSlider.startAutoCycle();
 
         /*recPopularVideoId = findViewById(R.id.recPopularVideoId);*/
         popularVideoRec = findViewById(R.id.popularVideoRec);

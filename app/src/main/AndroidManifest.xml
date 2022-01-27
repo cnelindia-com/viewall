@@ -10,6 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Viewall">
         <activity
+            android:name=".activities.BaseUrlActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.DownloanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:exported="true"></activity>
+        <activity
             android:name=".activities.ContactUsActivity"
             android:exported="false" />
         <activity
