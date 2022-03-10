@@ -6,11 +6,14 @@ import androidx.core.content.ContextCompat;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.view.Window;
 
 import com.example.viewall.MainActivity;
 import com.example.viewall.R;
+
+import java.io.File;
 
 public class SplashActivity extends AppCompatActivity {
 

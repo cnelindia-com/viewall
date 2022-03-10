@@ -68,6 +68,7 @@
                 android:layout_height="wrap_content"
                 android:drawablePadding="10dp"
                 android:hint="Enter Base URL here"
+                android:text="http://dev.view4all.tv/API/"
                 android:singleLine="true"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -75,7 +76,7 @@
         <Button
             android:id="@+id/submitId"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
             android:gravity="center"
             android:background="@drawable/button_shape"

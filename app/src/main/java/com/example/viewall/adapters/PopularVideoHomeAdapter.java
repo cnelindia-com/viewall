@@ -10,18 +10,23 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.viewall.R;
 import com.example.viewall.activities.HomeActivity;
 import com.example.viewall.activities.VideoShowActivity;
+import com.example.viewall.models.popularviedos.DataItem;
+
+import java.util.ArrayList;
 
 public class PopularVideoHomeAdapter extends RecyclerView.Adapter<PopularVideoHomeAdapter.PopularViewHolder> {
 
     Context context;
-    int popularList[];
+    ArrayList<DataItem> list;
 
-    public PopularVideoHomeAdapter(Context context, int[] popularList) {
+
+    public PopularVideoHomeAdapter(Context context, ArrayList<DataItem> list) {
         this.context = context;
-        this.popularList = popularList;
+        this.list = list;
     }
 
     @NonNull
@@ -34,19 +39,26 @@ public class PopularVideoHomeAdapter extends RecyclerView.Adapter<PopularVideoHo
 
     @Override
     public void onBindViewHolder(@NonNull PopularViewHolder holder, int position) {
-        holder.imgVid.setImageResource(popularList[position]);
+        DataItem dataItem = list.get(position);
+
+        Glide.with(context)
+                .load(dataItem.getImageUrl())
+                .placeholder(R.drawable.mainlogo)
+                .into(holder.imgVid);
 
         holder.imgVid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, VideoShowActivity.class));
+                Intent intent = new Intent(context, VideoShowActivity.class);
+                intent.putExtra("storedVideoId", dataItem.getId());
+                context.startActivity(intent);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return popularList.length;
+        return list.size();
     }
 
     public class PopularViewHolder extends RecyclerView.ViewHolder {

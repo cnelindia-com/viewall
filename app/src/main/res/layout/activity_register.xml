@@ -103,12 +103,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="10dp"
-                android:hint="Email"
+                android:hint="Number"
                 android:singleLine="true"
-                android:inputType="text" />
+                android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
+        <!--<com.google.android.material.textfield.TextInputLayout
+            android:visibility="gone"
             app:boxBackgroundColor="@android:color/transparent"
             android:background="@android:color/transparent"
             android:layout_width="match_parent"
@@ -124,12 +125,12 @@
                 android:hint="Password"
                 android:singleLine="true"
                 android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>-->
 
         <Button
             android:id="@+id/submit"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
             android:gravity="center"
             android:background="@drawable/button_shape"

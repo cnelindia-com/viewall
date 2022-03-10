@@ -58,58 +58,105 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="110dp"
-            android:background="@color/yellow"
+            android:background="@color/white"
             android:gravity="center"
             android:orientation="vertical">
 
             <ImageView
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
                 android:src="@drawable/banner2" />
+
+            <com.smarteist.autoimageslider.SliderView
+                android:id="@+id/imageSliderCat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:sliderAnimationDuration="600"
+                app:sliderAutoCycleDirection="right"
+                app:sliderAutoCycleEnabled="true"
+                app:sliderIndicatorAnimationDuration="600"
+                app:sliderIndicatorGravity="center_horizontal|bottom"
+                app:sliderIndicatorMargin="15dp"
+                app:sliderIndicatorOrientation="horizontal"
+                app:sliderIndicatorPadding="3dp"
+                app:sliderIndicatorRadius="2dp"
+                app:sliderIndicatorSelectedColor="#5A5A5A"
+                app:sliderIndicatorUnselectedColor="#FFF"
+                app:sliderScrollTimeInSec="3"
+                app:sliderStartAutoCycle="true"/>
+
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
             android:padding="5dp"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:weightSum="5">
+            android:background="@drawable/red_border"
+            android:layout_marginHorizontal="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:weightSum="5">
+
+                <ImageView
+                    android:id="@+id/imgBack"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/backicn" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/abeezee"
+                    android:gravity="center_vertical"
+                    android:text="BACK"
+                    android:textColor="@color/white"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/categoryNameId"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="3"
+                    android:fontFamily="@font/abeezee"
+                    android:gravity="center"
+                    android:text="SPORT VIDEOS"
+                    android:textColor="@color/Red"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <ImageView
-                android:id="@+id/imgBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/backicn" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/abeezee"
-                android:text="BACK"
-                android:textColor="@color/white"
-                android:textSize="25dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/userName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_weight="4"
-                android:fontFamily="@font/abeezee"
-                android:gravity="right"
-                android:text="SPORT VIDEOS"
-                android:textColor="@color/Red"
-                android:textSize="25dp"
-                android:textStyle="bold" />
+                android:id="@+id/imgCatHeaderId"
+                android:scaleType="fitXY"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="110dp"/>
         </LinearLayout>
 
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/singleCategoryRec"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:padding="2dp" />
+
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/idiskLayoutId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -171,6 +218,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/soccerlifeLayoutId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -233,6 +281,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/soccerLayoutId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -294,6 +343,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/cricketLayoutId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

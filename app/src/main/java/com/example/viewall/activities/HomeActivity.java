@@ -1,7 +1,15 @@
 package com.example.viewall.activities;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.Menu;
 import android.view.View;
@@ -13,7 +21,16 @@ import android.widget.Toast;
 
 import com.example.viewall.R;
 import com.example.viewall.adapters.HomeAddSliderAdapter;
+import com.example.viewall.adapters.HomeCategoryAdapter;
 import com.example.viewall.adapters.PopularVideoHomeAdapter;
+import com.example.viewall.broadcastrecivers.NetworkReceiver;
+import com.example.viewall.models.bannerlist.BannerResponse;
+import com.example.viewall.models.databasemodels.VideoModel;
+import com.example.viewall.models.homecategorylist.DataItem;
+import com.example.viewall.models.homecategorylist.HomeCategoryResponse;
+import com.example.viewall.models.popularviedos.PopularVideoResponse;
+import com.example.viewall.serviceapi.RetrofitClient;
+import com.example.viewall.utils.DatabaseHandler;
 import com.example.viewall.utils.SharePrefrancClass;
 import com.google.android.material.navigation.NavigationView;
 import com.smarteist.autoimageslider.SliderView;
@@ -27,6 +44,20 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -36,10 +67,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     LinearLayout popularVideoLayoutId;
     ImageView icn_hamburger, img1;
     /*RecyclerView recPopularVideoId;*/
-    RecyclerView popularVideoRec;
+    RecyclerView popularVideoRec, homeCategoryRec;
     PopularVideoHomeAdapter popularVideoHomeAdapter;
     SliderView imageSlider;
+    TextView userNameTxtId;
     int myImageList[] = {R.drawable.addicon, R.drawable.banner2, R.drawable.banner1};
+
+    ArrayList<DataItem> listCategory;
+    HomeCategoryAdapter homeCategoryAdapter;
+
+    ArrayList<com.example.viewall.models.bannerlist.DataItem> bannerList;
+    ArrayList<com.example.viewall.models.popularviedos.DataItem> popularVideoList;
+
+    ProgressDialog progressDialog;
+
+    DatabaseHandler databaseHandler;
+
+    String fileToDownload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,18 +95,51 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Window window = getWindow();
         window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
 
+//        Toast.makeText(HomeActivity.this, "MAC "+getMacAddress(), Toast.LENGTH_SHORT).show();
+
+        //Checking app is connected to net or not connected returns true if connected
+        /*if (isNetworkConnected()){
+            Toast.makeText(HomeActivity.this, "Connected to Internet", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(HomeActivity.this, "you are offline", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(HomeActivity.this, DownloanActivity.class));
+        }*/
+
+        //Code for create folder
+        File dir = new File(Environment.getExternalStorageDirectory() + "/Download/view4all/");
+        dir.mkdirs(); // creates needed dirs
+
+        databaseHandler = new DatabaseHandler(this);
+
+        //Call get data method for get data from database
+        databaseHandler.getAllVideoData();
+        List<VideoModel> data = databaseHandler.getAllVideoData();
+
+        NetworkReceiver networkReceiver = new NetworkReceiver();
+        registerReceiver(networkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle(null);
         toolbar.setSubtitle("");
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please wait");
+        progressDialog.setCancelable(false);
+
         imageSlider = findViewById(R.id.imageSlider);
-        imageSlider.setSliderAdapter(new HomeAddSliderAdapter(myImageList, HomeActivity.this));
-        imageSlider.startAutoCycle();
+        /*imageSlider.setSliderAdapter(new HomeAddSliderAdapter(myImageList, HomeActivity.this));
+        imageSlider.startAutoCycle();*/
+
+
+        userNameTxtId = findViewById(R.id.userNameTxtId);
+        userNameTxtId.setText(SharePrefrancClass.getInstance(HomeActivity.this).getPref("fname"));
 
         /*recPopularVideoId = findViewById(R.id.recPopularVideoId);*/
         popularVideoRec = findViewById(R.id.popularVideoRec);
+
+        homeCategoryRec = findViewById(R.id.homeCategoryRec);
 
         tvSports = findViewById(R.id.tvSports);
         txtMusic = findViewById(R.id.txtMusic);
@@ -83,9 +160,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 R.drawable.img4,
                 R.drawable.img5};
 
-        popularVideoHomeAdapter = new PopularVideoHomeAdapter(getApplicationContext(), popularImages);
+        /*popularVideoHomeAdapter = new PopularVideoHomeAdapter(getApplicationContext(), popularImages);
         popularVideoRec.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        popularVideoRec.setAdapter(popularVideoHomeAdapter);
+        popularVideoRec.setAdapter(popularVideoHomeAdapter);*/
 
         img1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,6 +271,98 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Calling category list api for get the list in home page
+        callCategoryList();
+
+        //Calling banner api.
+        callBannerListApi();
+
+        //Calling popular api.
+        callPopularVideoApi();
+
+    }
+
+    private void callBannerListApi(){
+        progressDialog.show();
+
+        Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList();
+
+        call.enqueue(new Callback<BannerResponse>() {
+            @Override
+            public void onResponse(Call<BannerResponse> call, Response<BannerResponse> response) {
+                progressDialog.dismiss();
+                if (response.body() != null){
+                    bannerList = new ArrayList<>();
+                    bannerList.addAll(response.body().getData());
+                    imageSlider.setSliderAdapter(new HomeAddSliderAdapter(bannerList, HomeActivity.this));
+                    imageSlider.startAutoCycle();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BannerResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(HomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void callPopularVideoApi(){
+        progressDialog.show();
+
+        Call<PopularVideoResponse> call = RetrofitClient.getInstance().getMyApi().popularVideos();
+
+        call.enqueue(new Callback<PopularVideoResponse>() {
+            @Override
+            public void onResponse(Call<PopularVideoResponse> call, Response<PopularVideoResponse> response) {
+                progressDialog.dismiss();
+                if (response.body() != null){
+                    popularVideoList = new ArrayList<>();
+                    popularVideoList.addAll(response.body().getData());
+
+                    popularVideoHomeAdapter = new PopularVideoHomeAdapter(getApplicationContext(), popularVideoList);
+                    popularVideoRec.setLayoutManager(new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false));
+                    popularVideoRec.setAdapter(popularVideoHomeAdapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PopularVideoResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(HomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void callCategoryList() {
+        progressDialog.show();
+        Call<HomeCategoryResponse> call = RetrofitClient.getInstance().getMyApi().homeCategory();
+
+        call.enqueue(new Callback<HomeCategoryResponse>() {
+            @Override
+            public void onResponse(Call<HomeCategoryResponse> call, Response<HomeCategoryResponse> response) {
+                progressDialog.dismiss();
+                if (response.body() != null) {
+                    listCategory = new ArrayList<>();
+                    listCategory.addAll(response.body().getData());
+                    //Setting the recycler adapter
+                    homeCategoryAdapter = new HomeCategoryAdapter(HomeActivity.this, listCategory);
+                    //Setting staggered layout in recyceler view
+                    StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
+                    //Setting the adapter of recycler view
+                    homeCategoryRec.setAdapter(homeCategoryAdapter);
+                    // Setting LayoutManager to RecyclerView
+                    homeCategoryRec.setLayoutManager(staggeredGridLayoutManager);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<HomeCategoryResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(HomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -236,4 +405,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }*/
+
+    private boolean isNetworkConnected(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+    }
+
 }

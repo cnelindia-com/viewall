@@ -57,82 +57,22 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="310dp"
+            android:layout_height="250dp"
             android:gravity="center"
             android:orientation="vertical">
 
-            <ImageView
+            <ProgressBar
+                android:id="@+id/progressbarVideo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+            <com.example.viewall.utils.ScalableVideoView
+                android:id="@+id/VideoView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/img1" />
+                android:layout_height="match_parent"/>
 
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp">
-
-            <ImageView
-                android:id="@+id/imgBack"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/backicn" />
-
-            <TextView
-                android:id="@+id/txtBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/imgBack"
-                android:layout_alignBottom="@+id/imgBack"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/imgBack"
-                android:fontFamily="@font/abeezee"
-                android:gravity="center"
-                android:text="BACK"
-                android:textColor="@color/white"
-                android:textSize="25dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/userName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/imgBack"
-                android:layout_alignBottom="@+id/imgBack"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:fontFamily="@font/abeezee"
-                android:text="IDISKI TV"
-                android:textColor="@color/Red"
-                android:textSize="25dp"
-                android:textStyle="bold" />
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:weightSum="2">
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:scaleType="fitXY"
-                android:src="@drawable/icnplay" />
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="15dp"
-                android:layout_weight="1"
-                android:scaleType="fitXY"
-                android:src="@drawable/icndownload" />
         </LinearLayout>
 
         <LinearLayout
@@ -144,7 +84,7 @@
             android:weightSum="5">
 
             <TextView
-                android:id="@+id/txtName"
+                android:id="@+id/txtVideoName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/imgBack"
@@ -166,15 +106,17 @@
                 android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/txtVideoDuration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="3:18"
                     android:textColor="@color/white"
-                    android:textSize="15dp"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center|right"
@@ -188,16 +130,102 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="5"
+            android:gravity="center_vertical"
+            android:padding="5dp">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:src="@drawable/backicn" />
+
+            <TextView
+                android:id="@+id/txtBack"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/abeezee"
+                android:gravity="start"
+                android:text="BACK"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtChannelNameId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:fontFamily="@font/abeezee"
+                android:gravity="center"
+                android:text="IDISKI TV"
+                android:textColor="@color/Red"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:weightSum="2">
+
+            <ImageView
+                android:visibility="invisible"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
+                android:src="@drawable/icnplay" />
+
+            <ImageView
+                android:id="@+id/imgDownloadId"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="15dp"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
+                android:src="@drawable/icndownload" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="110dp"
-            android:background="@color/yellow"
+            android:background="@color/white"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:orientation="vertical">
 
             <ImageView
+                android:visibility="gone"
                 android:src="@drawable/addicon"
                 android:scaleType="fitXY"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+
+            <com.smarteist.autoimageslider.SliderView
+                android:id="@+id/imageSlider"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:sliderAnimationDuration="600"
+                app:sliderAutoCycleDirection="right"
+                app:sliderAutoCycleEnabled="true"
+                app:sliderIndicatorAnimationDuration="600"
+                app:sliderIndicatorGravity="center_horizontal|bottom"
+                app:sliderIndicatorMargin="15dp"
+                app:sliderIndicatorOrientation="horizontal"
+                app:sliderIndicatorPadding="3dp"
+                app:sliderIndicatorRadius="2dp"
+                app:sliderIndicatorSelectedColor="#5A5A5A"
+                app:sliderIndicatorUnselectedColor="#FFF"
+                app:sliderScrollTimeInSec="3"
+                app:sliderStartAutoCycle="true" />
         </LinearLayout>
 
     </LinearLayout>
