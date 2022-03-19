@@ -6,15 +6,21 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
+import com.example.viewall.models.advert.AdvertResponse;
 import com.example.viewall.models.bannerlist.BannerResponse;
 import com.example.viewall.models.contact.ContactResponse;
 import com.example.viewall.models.getuser.GetUserResponse;
 import com.example.viewall.models.homecategorylist.HomeCategoryResponse;
+import com.example.viewall.models.index.IndexResponse;
 import com.example.viewall.models.popularviedos.PopularVideoResponse;
 import com.example.viewall.models.register.RegisterResponse;
+import com.example.viewall.models.seenvideolist.SeenVideoResponse;
 import com.example.viewall.models.singlecategorylist.SingleCategoryResponse;
 import com.example.viewall.models.singlevideo.SingleVideoResponse;
 import com.example.viewall.models.track.TrackResponse;
+import com.example.viewall.models.videosmodel.VideoResponse;
+import com.example.viewall.models.watchapi.WatchResponse;
+import com.example.viewall.models.watchvideo.WatchVideoResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -39,7 +45,7 @@ public interface ApiInterface {
                                     @Field("o_last_name") String o_last_name,
                                     @Field("o_phone") String o_phone,
                                     @Field("mac_address") String mac_address
-                                    /*@Field("email") String email*/);
+            /*@Field("email") String email*/);
 
     //http://dev.view4all.tv/API/api.php?action=getallcategory
     @NonNull
@@ -85,5 +91,43 @@ public interface ApiInterface {
     @POST("api.php?action=track")
     Call<TrackResponse> sendTrack(@Query("user_id") String user_id,
                                   @Query("type") String type);
+
+    //http://dev.view4all.tv/API/api.php?action=whatch_videos_saved
+    @NonNull
+    @POST("api.php?action=whatch_videos_saved")
+    Call<WatchVideoResponse> saveWatchVideo(@Query("user_id") String user_id,
+                                            @Query("channel_id") String channel_id,
+                                            @Query("video_id") String video_id);
+
+    //http://dev.view4all.tv/API/api.php?action=get_watch_video_list&user_id=30c501461fee0e175a3c602242d34b03&channel_id=4ccc9046-a697-4459-a424-6250e4a15242&current_video_id=0300377f-39a2-4bfa-bf4e-3620ce37d8aa
+    @NonNull
+    @POST("api.php?action=get_watch_video_list")
+    Call<SeenVideoResponse> showWatchVideo(@Query("user_id") String user_id,
+                                           @Query("channel_id") String channel_id,
+                                           @Query("current_video_id") String current_video_id);
+
+    //http://dev.view4all.tv/API/api.php?action=index
+    @NonNull
+    @POST("api.php?action=index")
+    Call<IndexResponse> index(@Query("contact_id") String contact_id);
+
+    //http://dev.view4all.tv/API/api.php?action=advert
+    @NonNull
+    @POST("api.php?action=advert")
+    Call<AdvertResponse> advert(@Query("video") String video);
+
+    //http://dev.view4all.tv/API/api.php?action=video
+    @NonNull
+    @POST("api.php?action=video")
+    Call<VideoResponse> videoApi(@Query("video_id") String video_id,
+                                 @Query("contact_id") String contact_id,
+                                 @Query("ip") String ip);
+
+    //http://dev.view4all.tv/API/api.php?action=watch
+    @NonNull
+    @POST("api.php?action=watch")
+    Call<WatchResponse> watchApi(@Query("channel_name") String channel_name,
+                                 @Query("contact_id") String contact_id,
+                                 @Query("channel_id") String channel_id);
 
 }

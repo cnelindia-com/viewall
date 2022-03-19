@@ -92,6 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
                         SharePrefrancClass.getInstance(RegisterActivity.this).savePref("lname", response.body().getData().getOLastName());
                         SharePrefrancClass.getInstance(RegisterActivity.this).savePref("email", response.body().getData().getEmail());
                         SharePrefrancClass.getInstance(RegisterActivity.this).savePref("id", response.body().getData().getId());
+                        SharePrefrancClass.getInstance(RegisterActivity.this).savePref("phone_number", response.body().getData().getOPhone());
 
                         //Saving register status
                         SharePrefrancClass.getInstance(RegisterActivity.this).savePref("isLogin", "true");

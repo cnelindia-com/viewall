@@ -28,6 +28,7 @@ import com.example.viewall.models.bannerlist.BannerResponse;
 import com.example.viewall.models.databasemodels.VideoModel;
 import com.example.viewall.models.homecategorylist.DataItem;
 import com.example.viewall.models.homecategorylist.HomeCategoryResponse;
+import com.example.viewall.models.index.IndexResponse;
 import com.example.viewall.models.popularviedos.PopularVideoResponse;
 import com.example.viewall.serviceapi.RetrofitClient;
 import com.example.viewall.utils.DatabaseHandler;
@@ -114,6 +115,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         //Call get data method for get data from database
         databaseHandler.getAllVideoData();
         List<VideoModel> data = databaseHandler.getAllVideoData();
+        Toast.makeText(HomeActivity.this, data.get(0).getVideoUrl(), Toast.LENGTH_SHORT).show();
 
         NetworkReceiver networkReceiver = new NetworkReceiver();
         registerReceiver(networkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -271,6 +273,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Calling index api.
+        callIndexApi();
+
         //Calling category list api for get the list in home page
         callCategoryList();
 
@@ -332,6 +337,30 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(HomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void callIndexApi() {
+        progressDialog.show();
+
+        Call<IndexResponse> call = RetrofitClient.getInstance().getMyApi().index(
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("phone_number") );
+
+        call.enqueue(new Callback<IndexResponse>() {
+            @Override
+            public void onResponse(Call<IndexResponse> call, Response<IndexResponse> response) {
+                progressDialog.dismiss();
+                if (response.body() != null){
+                    /*Toast.makeText(HomeActivity.this, "Index status:" + response.body().getStatus(), Toast.LENGTH_SHORT).show();*/
+                }
+            }
+
+            @Override
+            public void onFailure(Call<IndexResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                /*Toast.makeText(HomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();*/
+            }
+        });
+
     }
 
     private void callCategoryList() {

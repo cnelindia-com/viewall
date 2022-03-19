@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -25,10 +28,16 @@ import android.widget.VideoView;
 
 import com.example.viewall.R;
 import com.example.viewall.adapters.HomeAddSliderAdapter;
+import com.example.viewall.adapters.SeenVideoAdapter;
+import com.example.viewall.models.advert.AdvertResponse;
 import com.example.viewall.models.bannerlist.BannerResponse;
 import com.example.viewall.models.databasemodels.VideoModel;
+import com.example.viewall.models.seenvideolist.DataItem;
+import com.example.viewall.models.seenvideolist.SeenVideoResponse;
 import com.example.viewall.models.singlevideo.SingleVideoResponse;
 import com.example.viewall.models.track.TrackResponse;
+import com.example.viewall.models.videosmodel.VideoResponse;
+import com.example.viewall.models.watchvideo.WatchVideoResponse;
 import com.example.viewall.serviceapi.RetrofitClient;
 import com.example.viewall.utils.DatabaseHandler;
 import com.example.viewall.utils.ScalableVideoView;
@@ -67,6 +76,10 @@ public class VideoShowActivity extends AppCompatActivity {
     String strVideoName, strAddVideoName;
 
     String strDbVideoName;
+    String strPhoneNumber;
+
+    SeenVideoAdapter seenVideoAdapter;
+    ArrayList<DataItem> listData;
 
 
     //Below is working code.
@@ -78,6 +91,8 @@ public class VideoShowActivity extends AppCompatActivity {
     DatabaseHandler databaseHandler;
 
     ArrayList<com.example.viewall.models.bannerlist.DataItem> bannerList;
+
+    RecyclerView categoryWatchedRec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,18 +129,27 @@ public class VideoShowActivity extends AppCompatActivity {
         strVideoId = getData.getStringExtra("storedVideoId");
         strChannelName = getData.getStringExtra("storedChannelName");
 
+        strPhoneNumber = SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number");
+
         //Calling banner api.
         callBannerListApi();
 
         /*Toast.makeText(VideoShowActivity.this, strVideoId, Toast.LENGTH_SHORT).show();*/
         callSingleVideoApi();
 
+        //Call seen video api
+        callSeenVideoApi();
+
+        //Call track api
+//        callTrackApi();
+
         txtVideoName = findViewById(R.id.txtVideoName);
         txtVideoDuration = findViewById(R.id.txtVideoDuration);
         txtChannelNameId = findViewById(R.id.txtChannelNameId);
 
-        txtChannelNameId.setText(strChannelName);
+        categoryWatchedRec = findViewById(R.id.categoryWatchedRec);
 
+        txtChannelNameId.setText(strChannelName);
 
         imgBack = findViewById(R.id.imgBack);
 
@@ -179,8 +203,10 @@ public class VideoShowActivity extends AppCompatActivity {
     //Method for call the download function
     private void callDownload() {
 
-        fileToDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                .toString() + "/view4all/" + strVideoName;
+        /*fileToDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .toString() + "/view4all/" + strVideoName;*/
+
+        fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strDbVideoName + ".mp4" /*strVideoName*/ ;
 
 
         final Request request = new Request(strVideoUrlForDownload, fileToDownload);
@@ -202,10 +228,46 @@ public class VideoShowActivity extends AppCompatActivity {
         });
     }
 
+    private void callVideoApi() {
+
+        Call<VideoResponse> call = RetrofitClient.getInstance().getMyApi().videoApi(strVideoId, strPhoneNumber /*"3333333333"*/, "675465463");
+
+        call.enqueue(new Callback<VideoResponse>() {
+            @Override
+            public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
+                if (response.body() != null){
+                    Log.d("Videoapires ", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<VideoResponse> call, Throwable t) {
+                Log.d("Videoapifail ", t.getMessage());
+            }
+        });
+    }
+
+    private void callAdvertApi(String currentAddVideoUrl) {
+
+        Call<AdvertResponse> call = RetrofitClient.getInstance().getMyApi().advert(currentAddVideoUrl);
+
+        call.enqueue(new Callback<AdvertResponse>() {
+            @Override
+            public void onResponse(Call<AdvertResponse> call, Response<AdvertResponse> response) {
+                if (response.body() != null){
+                    Log.d("advertapiresponse: ", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AdvertResponse> call, Throwable t) {
+                Log.d("advertapierror: ", t.getMessage());
+            }
+        });
+    }
+
     private void callTrackApi() {
         progressDialog.show();
-
-        SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("id");
 
         Call<TrackResponse> call = RetrofitClient.getInstance().getMyApi()
                 .sendTrack(SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("id"),
@@ -217,14 +279,14 @@ public class VideoShowActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 if (response.body() != null) {
                     Toast.makeText(VideoShowActivity.this,
-                            response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                           "TRACK" + response.body().getStatus(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<TrackResponse> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(VideoShowActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(VideoShowActivity.this, "TRACK"+ t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -239,6 +301,8 @@ public class VideoShowActivity extends AppCompatActivity {
             public void onResponse(Call<SingleVideoResponse> call, Response<SingleVideoResponse> response) {
                 progressDialog.dismiss();
                 if (response.body() != null) {
+                    //Call api for save watched video
+                    callSaveWatchVideoApi();
                     Toast.makeText(VideoShowActivity.this, response.body().getData().get(0).getUrlVideo(), Toast.LENGTH_SHORT).show();
                     Log.d("dataValue", response.body().getData().get(0).getUrlVideo());
 
@@ -246,6 +310,11 @@ public class VideoShowActivity extends AppCompatActivity {
                     txtVideoDuration.setText(response.body().getData().get(0).getTime());
                     strDbVideoName = response.body().getData().get(0).getDescription().getName();
 
+                    //Call advert api method
+                    callAdvertApi(response.body().getData().get(0).getAddUrlVideo());
+
+                    //Call video api method
+                    callVideoApi();
 
                     strVideoName = response.body().getData().get(0).getUrlVideo()
                             .replace("http://dev.view4all.tv/content/", "");
@@ -265,6 +334,61 @@ public class VideoShowActivity extends AppCompatActivity {
                 Toast.makeText(VideoShowActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void callSaveWatchVideoApi() {
+
+        Call<WatchVideoResponse> call = RetrofitClient.getInstance().getMyApi().saveWatchVideo(SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("id"),
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"),
+                strVideoId);
+
+        call.enqueue(new Callback<WatchVideoResponse>() {
+            @Override
+            public void onResponse(Call<WatchVideoResponse> call, Response<WatchVideoResponse> response) {
+                if (response.body() != null){
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WatchVideoResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void callSeenVideoApi(){
+        progressDialog.show();
+
+        Call<SeenVideoResponse> call = RetrofitClient.getInstance().getMyApi().showWatchVideo(SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("id"),
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"),
+                strVideoId);
+
+        call.enqueue(new Callback<SeenVideoResponse>() {
+            @Override
+            public void onResponse(Call<SeenVideoResponse> call, Response<SeenVideoResponse> response) {
+                progressDialog.dismiss();
+                if (response.body() != null) {
+                    listData = new ArrayList<>();
+                    listData.addAll(response.body().getData());
+
+                    seenVideoAdapter = new SeenVideoAdapter(VideoShowActivity.this, listData);
+                    //Setting staggered layout in recycler view
+                    StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
+                    // Setting LayoutManager to RecyclerView
+                    categoryWatchedRec.setLayoutManager(staggeredGridLayoutManager);
+                    categoryWatchedRec.setAdapter(seenVideoAdapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SeenVideoResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(VideoShowActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private void runVideo(String url) {

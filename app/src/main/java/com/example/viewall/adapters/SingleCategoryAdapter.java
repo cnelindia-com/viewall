@@ -82,11 +82,9 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
 
         holder.videoNameId.setText(dataItem.getDescription().getName());
 
-        strDbVideoName = dataItem.getDescription().getName();
-        strVideoUrlForDownload = dataItem.getUrlVideo();
 
-        strVideoName = dataItem.getUrlVideo()
-                .replace("http://dev.view4all.tv/content/", "");
+
+
 
         Glide.with(context)
                 .load(dataItem.getImageUrl())
@@ -107,6 +105,11 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
             @Override
             public void onClick(View view) {
                 Toast.makeText(context, "VIDEO URL : " + dataItem.getUrlVideo(), Toast.LENGTH_SHORT).show();
+                strDbVideoName = dataItem.getDescription().getName();
+                strVideoUrlForDownload = dataItem.getUrlVideo();
+
+                strVideoName = dataItem.getUrlVideo()
+                        .replace("http://dev.view4all.tv/content/", "");
                 //Call download method here
                 callDownload();
             }
@@ -137,8 +140,10 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
     //Method for call the download function
     private void callDownload() {
 
-        fileToDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                .toString() + "/view4all/" + strVideoName;
+        /*fileToDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .toString() + "/view4all/" + strVideoName;*/
+
+        fileToDownload = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strDbVideoName + ".mp4" /*strVideoName*/;
 
 //        databaseHandler.addData(new VideoModel("videoname", fileToDownload));
 

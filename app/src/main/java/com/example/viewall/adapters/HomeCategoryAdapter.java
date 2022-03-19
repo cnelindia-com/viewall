@@ -2,6 +2,7 @@ package com.example.viewall.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +15,30 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.viewall.R;
 import com.example.viewall.activities.SportsActivity;
+import com.example.viewall.activities.VideoShowActivity;
 import com.example.viewall.models.homecategorylist.DataItem;
+import com.example.viewall.models.watchapi.WatchResponse;
+import com.example.viewall.serviceapi.RetrofitClient;
 import com.example.viewall.utils.SharePrefrancClass;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeCategoryAdapter extends RecyclerView.Adapter<HomeCategoryAdapter.HomeViewHolder>{
 
     Context context;
     ArrayList<DataItem> list;
 
+    String strPhoneNumber;
+
     public HomeCategoryAdapter(Context context, ArrayList<DataItem> list) {
         this.context = context;
         this.list = list;
+
+        strPhoneNumber = SharePrefrancClass.getInstance(context).getPref("phone_number");
     }
 
     @NonNull
@@ -49,6 +61,10 @@ public class HomeCategoryAdapter extends RecyclerView.Adapter<HomeCategoryAdapte
                 /*Toast.makeText(context, dataItem.getId(), Toast.LENGTH_SHORT).show();*/
                 SharePrefrancClass.getInstance(context).savePref("catIdFromHome", dataItem.getId());
                 SharePrefrancClass.getInstance(context).savePref("catNameFromHome", dataItem.getName());
+
+                //Calling watch api method
+                callWatchApi(dataItem.getName(), dataItem.getId());
+
                 Intent putDataIntent = new Intent(context, SportsActivity.class);
                 putDataIntent.putExtra("catId", dataItem.getId());
                 putDataIntent.putExtra("catName", dataItem.getName());
@@ -73,4 +89,23 @@ public class HomeCategoryAdapter extends RecyclerView.Adapter<HomeCategoryAdapte
             txtCatId = itemView.findViewById(R.id.txtCatId);
         }
     }
+
+    private void callWatchApi(String catName, String catId){
+        Call<WatchResponse> call = RetrofitClient.getInstance().getMyApi().watchApi(catName, strPhoneNumber, catId);
+
+        call.enqueue(new Callback<WatchResponse>() {
+            @Override
+            public void onResponse(Call<WatchResponse> call, Response<WatchResponse> response) {
+                if (response.body() != null){
+                    Log.d("watchapires ", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WatchResponse> call, Throwable t) {
+                Log.d("watchapifail ", t.getMessage());
+            }
+        });
+    }
+
 }
