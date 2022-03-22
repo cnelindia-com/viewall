@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ import com.example.viewall.R;
 import com.example.viewall.adapters.HomeAddSliderAdapter;
 import com.example.viewall.adapters.SingleCategoryAdapter;
 import com.example.viewall.models.bannerlist.BannerResponse;
+import com.example.viewall.models.channel1.Channel1Response;
 import com.example.viewall.models.singlecategorylist.DataItem;
 import com.example.viewall.models.singlecategorylist.HeaderItem;
 import com.example.viewall.models.singlecategorylist.SingleCategoryResponse;
@@ -134,7 +136,34 @@ public class SportsActivity extends AppCompatActivity {
         });
     }
 
+    private void callChannel1Api() {
+        String bannerUrl = "";
+        String tempStr = "";
+        for (int i=0; i<bannerList.size(); i++){
+            tempStr = bannerList.get(i).getImageUrl().replace("http://dev.view4all.tv/content/", "");
+            bannerUrl = bannerUrl + ", " + tempStr;
+            /*bannerUrl = bannerUrl + ", " + bannerList.get(i).getImageUrl();*/
+        }
+        Log.d("ChannelBANNERURL", bannerUrl);
 
+        Call<Channel1Response> call = RetrofitClient.getInstance().getMyApi().channel1(bannerUrl,
+                SharePrefrancClass.getInstance(SportsActivity.this).getPref("phone_number"));
+
+        call.enqueue(new Callback<Channel1Response>() {
+            @Override
+            public void onResponse(Call<Channel1Response> call, Response<Channel1Response> response) {
+                if (response.body() != null) {
+                    /*Toast.makeText(HomeActivity.this, "Index status:" + response.body().getStatus(), Toast.LENGTH_SHORT).show();*/
+                    Log.d("channel1res", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Channel1Response> call, Throwable t) {
+                Log.d("channel1fail", t.getMessage());
+            }
+        });
+    }
 
     private void callBannerListApi(){
         progressDialog.show();
@@ -150,6 +179,9 @@ public class SportsActivity extends AppCompatActivity {
                     bannerList.addAll(response.body().getData());
                     imageSliderCat.setSliderAdapter(new HomeAddSliderAdapter(bannerList, SportsActivity.this));
                     imageSliderCat.startAutoCycle();
+
+                    //Calling channel1 api
+                    callChannel1Api();
                 }
             }
 

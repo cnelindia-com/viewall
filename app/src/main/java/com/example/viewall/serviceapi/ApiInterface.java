@@ -8,10 +8,12 @@ import androidx.annotation.NonNull;
 
 import com.example.viewall.models.advert.AdvertResponse;
 import com.example.viewall.models.bannerlist.BannerResponse;
+import com.example.viewall.models.channel1.Channel1Response;
 import com.example.viewall.models.contact.ContactResponse;
 import com.example.viewall.models.getuser.GetUserResponse;
 import com.example.viewall.models.homecategorylist.HomeCategoryResponse;
 import com.example.viewall.models.index.IndexResponse;
+import com.example.viewall.models.index1.Index1Response;
 import com.example.viewall.models.popularviedos.PopularVideoResponse;
 import com.example.viewall.models.register.RegisterResponse;
 import com.example.viewall.models.seenvideolist.SeenVideoResponse;
@@ -129,5 +131,17 @@ public interface ApiInterface {
     Call<WatchResponse> watchApi(@Query("channel_name") String channel_name,
                                  @Query("contact_id") String contact_id,
                                  @Query("channel_id") String channel_id);
+
+    //http://dev.view4all.tv/API/api.php?action=index1
+    @NonNull
+    @POST("api.php?action=index1")
+    Call<Index1Response> index1(@Query("contact_id") String contact_id,
+                                @Query("banner") String banner);
+
+    //http://dev.view4all.tv/API/api.php?action=channel_1
+    @NonNull
+    @POST("api.php?action=channel_1")
+    Call<Channel1Response> channel1(@Query("banner") String banner,
+                                    @Query("contact_id") String contact_id);
 
 }

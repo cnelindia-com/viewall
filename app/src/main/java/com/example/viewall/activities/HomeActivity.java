@@ -29,6 +29,7 @@ import com.example.viewall.models.databasemodels.VideoModel;
 import com.example.viewall.models.homecategorylist.DataItem;
 import com.example.viewall.models.homecategorylist.HomeCategoryResponse;
 import com.example.viewall.models.index.IndexResponse;
+import com.example.viewall.models.index1.Index1Response;
 import com.example.viewall.models.popularviedos.PopularVideoResponse;
 import com.example.viewall.serviceapi.RetrofitClient;
 import com.example.viewall.utils.DatabaseHandler;
@@ -113,9 +114,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         databaseHandler = new DatabaseHandler(this);
 
         //Call get data method for get data from database
-        databaseHandler.getAllVideoData();
-        List<VideoModel> data = databaseHandler.getAllVideoData();
-        Toast.makeText(HomeActivity.this, data.get(0).getVideoUrl(), Toast.LENGTH_SHORT).show();
+        /*databaseHandler.getAllVideoData();
+        List<VideoModel> data = databaseHandler.getAllVideoData();*/
+        /*Toast.makeText(HomeActivity.this, data.get(0).getVideoUrl(), Toast.LENGTH_SHORT).show();*/
 
         NetworkReceiver networkReceiver = new NetworkReceiver();
         registerReceiver(networkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -276,6 +277,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         //Calling index api.
         callIndexApi();
 
+
         //Calling category list api for get the list in home page
         callCategoryList();
 
@@ -287,7 +289,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void callBannerListApi(){
+    private void callBannerListApi() {
         progressDialog.show();
 
         Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList();
@@ -296,11 +298,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onResponse(Call<BannerResponse> call, Response<BannerResponse> response) {
                 progressDialog.dismiss();
-                if (response.body() != null){
+                if (response.body() != null) {
                     bannerList = new ArrayList<>();
                     bannerList.addAll(response.body().getData());
                     imageSlider.setSliderAdapter(new HomeAddSliderAdapter(bannerList, HomeActivity.this));
                     imageSlider.startAutoCycle();
+
+                    //Calling index1 api
+                    callIndex1Api();
                 }
             }
 
@@ -312,7 +317,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void callPopularVideoApi(){
+    private void callPopularVideoApi() {
         progressDialog.show();
 
         Call<PopularVideoResponse> call = RetrofitClient.getInstance().getMyApi().popularVideos();
@@ -321,7 +326,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onResponse(Call<PopularVideoResponse> call, Response<PopularVideoResponse> response) {
                 progressDialog.dismiss();
-                if (response.body() != null){
+                if (response.body() != null) {
                     popularVideoList = new ArrayList<>();
                     popularVideoList.addAll(response.body().getData());
 
@@ -339,17 +344,47 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void callIndex1Api() {
+        String bannerUrl = "";
+        String tempStr = "";
+        for (int i = 0; i < bannerList.size(); i++) {
+            tempStr = bannerList.get(i).getImageUrl().replace("http://dev.view4all.tv/content/", "");
+            bannerUrl = bannerUrl + ", " + tempStr;
+        }
+        Log.d("BANNERURL", bannerUrl);
+
+        Call<Index1Response> call = RetrofitClient.getInstance().getMyApi().index1(
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("phone_number"),
+                bannerUrl);
+
+        call.enqueue(new Callback<Index1Response>() {
+            @Override
+            public void onResponse(Call<Index1Response> call, Response<Index1Response> response) {
+                if (response.body() != null) {
+                    /*Toast.makeText(HomeActivity.this, "Index status:" + response.body().getStatus(), Toast.LENGTH_SHORT).show();*/
+                    Log.d("index1res", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Index1Response> call, Throwable t) {
+                /*Toast.makeText(HomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();*/
+                Log.d("index1fail", t.getMessage());
+            }
+        });
+    }
+
     private void callIndexApi() {
         progressDialog.show();
 
         Call<IndexResponse> call = RetrofitClient.getInstance().getMyApi().index(
-                SharePrefrancClass.getInstance(HomeActivity.this).getPref("phone_number") );
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("phone_number"));
 
         call.enqueue(new Callback<IndexResponse>() {
             @Override
             public void onResponse(Call<IndexResponse> call, Response<IndexResponse> response) {
                 progressDialog.dismiss();
-                if (response.body() != null){
+                if (response.body() != null) {
                     /*Toast.makeText(HomeActivity.this, "Index status:" + response.body().getStatus(), Toast.LENGTH_SHORT).show();*/
                 }
             }
@@ -435,9 +470,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 || super.onSupportNavigateUp();
     }*/
 
-    private boolean isNetworkConnected(){
+    private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+    }
+
 
 }

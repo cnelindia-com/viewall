@@ -51,6 +51,7 @@ import com.tonyodev.fetch2.Priority;
 import com.tonyodev.fetch2.Request;
 import com.tonyodev.fetch2core.Func;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -73,7 +74,7 @@ public class VideoShowActivity extends AppCompatActivity {
     private Fetch fetch;
 
     String strVideoUrlForDownload;
-    String strVideoName, strAddVideoName;
+    String strVideoName, strAddVideoNameUrl, strAddVideoNameToStore;
 
     String strDbVideoName;
     String strPhoneNumber;
@@ -200,13 +201,46 @@ public class VideoShowActivity extends AppCompatActivity {
         }
     }
 
+    //Method for call download advt videos
+    private void callDownloadAdvt() {
+        //Below code for create new folder in the download directory
+        String folder_main = "AddVideos";
+        File f = new File(Environment.getExternalStorageDirectory(), folder_main);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+
+        fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()+ "/" + folder_main + "/" + strAddVideoNameToStore  /*+ ".mp4"*/ /*strVideoName*/;
+        /*fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strAddVideoNameToStore  *//*+ ".mp4"*//* *//*strVideoName*//*;*/
+
+
+        final Request request = new Request(strAddVideoNameUrl, fileToDownload);
+        request.setPriority(Priority.HIGH);
+        request.setNetworkType(NetworkType.ALL);
+        request.addHeader("clientKey", "SD78DF93_3947&MVNGHE1WONG");
+
+        fetch.enqueue(request, new Func<Request>() {
+            @Override
+            public void call(@NonNull Request result) {
+                Toast.makeText(VideoShowActivity.this, "Successful", Toast.LENGTH_SHORT).show();
+                //Code for save data in the database
+                /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));*/
+            }
+        }, new Func<Error>() {
+            @Override
+            public void call(@NonNull Error result) {
+                Toast.makeText(VideoShowActivity.this, result.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     //Method for call the download function
     private void callDownload() {
 
         /*fileToDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 .toString() + "/view4all/" + strVideoName;*/
 
-        fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strDbVideoName + ".mp4" /*strVideoName*/ ;
+        fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strDbVideoName + ".mp4" /*strVideoName*/;
 
 
         final Request request = new Request(strVideoUrlForDownload, fileToDownload);
@@ -235,7 +269,7 @@ public class VideoShowActivity extends AppCompatActivity {
         call.enqueue(new Callback<VideoResponse>() {
             @Override
             public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
-                if (response.body() != null){
+                if (response.body() != null) {
                     Log.d("Videoapires ", response.body().getStatus());
                 }
             }
@@ -254,7 +288,7 @@ public class VideoShowActivity extends AppCompatActivity {
         call.enqueue(new Callback<AdvertResponse>() {
             @Override
             public void onResponse(Call<AdvertResponse> call, Response<AdvertResponse> response) {
-                if (response.body() != null){
+                if (response.body() != null) {
                     Log.d("advertapiresponse: ", response.body().getStatus());
                 }
             }
@@ -266,7 +300,7 @@ public class VideoShowActivity extends AppCompatActivity {
         });
     }
 
-    private void callTrackApi() {
+    /*private void callTrackApi() {
         progressDialog.show();
 
         Call<TrackResponse> call = RetrofitClient.getInstance().getMyApi()
@@ -279,17 +313,17 @@ public class VideoShowActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 if (response.body() != null) {
                     Toast.makeText(VideoShowActivity.this,
-                           "TRACK" + response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                            "TRACK" + response.body().getStatus(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<TrackResponse> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(VideoShowActivity.this, "TRACK"+ t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(VideoShowActivity.this, "TRACK" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
+    }*/
 
     private void callSingleVideoApi() {
         progressDialog.show();
@@ -319,10 +353,17 @@ public class VideoShowActivity extends AppCompatActivity {
                     strVideoName = response.body().getData().get(0).getUrlVideo()
                             .replace("http://dev.view4all.tv/content/", "");
 
+                    strAddVideoNameToStore = response.body().getData().get(0).getAddUrlVideo()
+                            .replace("http://dev.view4all.tv/content/", "");
+
                     //Add video add name
-                    strAddVideoName = response.body().getData().get(0).getAddUrlVideo();
+                    strAddVideoNameUrl = response.body().getData().get(0).getAddUrlVideo();
 
                     strVideoUrlForDownload = response.body().getData().get(0).getUrlVideo();
+
+                    //Call method for download advert
+                    callDownloadAdvt();
+
                     //Method for try running video
                     runVideo(response.body().getData().get(0).getUrlVideo());
                 }
@@ -345,7 +386,7 @@ public class VideoShowActivity extends AppCompatActivity {
         call.enqueue(new Callback<WatchVideoResponse>() {
             @Override
             public void onResponse(Call<WatchVideoResponse> call, Response<WatchVideoResponse> response) {
-                if (response.body() != null){
+                if (response.body() != null) {
 
                 }
             }
@@ -358,7 +399,7 @@ public class VideoShowActivity extends AppCompatActivity {
 
     }
 
-    private void callSeenVideoApi(){
+    private void callSeenVideoApi() {
         progressDialog.show();
 
         Call<SeenVideoResponse> call = RetrofitClient.getInstance().getMyApi().showWatchVideo(SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("id"),
@@ -403,7 +444,7 @@ public class VideoShowActivity extends AppCompatActivity {
             mediaController.setAnchorView(videoView);
             /*Uri video = Uri.parse("https://www.w3schools.com/html/mov_bbb.mp4");*/
 //            Uri video = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.video);
-            Uri video = Uri.parse(strAddVideoName);
+            Uri video = Uri.parse(strAddVideoNameUrl);
             videoView.setMediaController(null);
             videoView.setVideoURI(video);
             videoView.start();
@@ -439,7 +480,7 @@ public class VideoShowActivity extends AppCompatActivity {
         }
     }
 
-    private void callBannerListApi(){
+    private void callBannerListApi() {
         progressDialog.show();
 
         Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList();
@@ -448,7 +489,7 @@ public class VideoShowActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<BannerResponse> call, Response<BannerResponse> response) {
                 progressDialog.dismiss();
-                if (response.body() != null){
+                if (response.body() != null) {
                     bannerList = new ArrayList<>();
                     bannerList.addAll(response.body().getData());
                     imageSlider.setSliderAdapter(new HomeAddSliderAdapter(bannerList, VideoShowActivity.this));
