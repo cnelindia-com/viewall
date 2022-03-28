@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.example.viewall.models.advert.AdvertResponse;
 import com.example.viewall.models.bannerlist.BannerResponse;
+import com.example.viewall.models.channel.ChannelResponse;
 import com.example.viewall.models.channel1.Channel1Response;
 import com.example.viewall.models.contact.ContactResponse;
 import com.example.viewall.models.getuser.GetUserResponse;
@@ -21,7 +22,14 @@ import com.example.viewall.models.singlecategorylist.SingleCategoryResponse;
 import com.example.viewall.models.singlevideo.SingleVideoResponse;
 import com.example.viewall.models.track.TrackResponse;
 import com.example.viewall.models.videosmodel.VideoResponse;
+import com.example.viewall.models.watch1.Watch1Response;
+import com.example.viewall.models.watch2.Watch2Response;
+import com.example.viewall.models.watch3.Watch3Response;
+import com.example.viewall.models.watch4.Watch4Response;
+import com.example.viewall.models.watch5.Watch5Response;
+import com.example.viewall.models.watchadvert.WatchAdvertResponse;
 import com.example.viewall.models.watchapi.WatchResponse;
+import com.example.viewall.models.watchmarker.WatchMarkerResponse;
 import com.example.viewall.models.watchvideo.WatchVideoResponse;
 
 import retrofit2.Call;
@@ -143,5 +151,62 @@ public interface ApiInterface {
     @POST("api.php?action=channel_1")
     Call<Channel1Response> channel1(@Query("banner") String banner,
                                     @Query("contact_id") String contact_id);
+
+    //http://dev.view4all.tv/API/api.php?action=watch1
+    @NonNull
+    @POST("api.php?action=watch1")
+    Call<Watch1Response> watch1(@Query("video_id") String video_id,
+                                @Query("contact_id") String contact_id,
+                                @Query("channel_id") String channel_id);
+
+    //http://dev.view4all.tv/API/api.php?action=watch2
+    @NonNull
+    @POST("api.php?action=watch2")
+    Call<Watch2Response> watch2(@Query("ad_id") String ad_id,
+                                @Query("contact_id") String contact_id,
+                                @Query("channel_id") String channel_id);
+
+    //http://dev.view4all.tv/API/api.php?action=watch3
+    @NonNull
+    @POST("api.php?action=watch3")
+    Call<Watch3Response> watch3(@Query("ad_id") String ad_id,
+                                @Query("ip") String ip,
+                                @Query("contact_id") String contact_id,
+                                @Query("video_id") String video_id);
+
+    //http://dev.view4all.tv/API/api.php?action=watch4
+    @NonNull
+    @POST("api.php?action=watch4")
+    Call<Watch4Response> watch4(@Query("channel_name") String channel_name,
+                                @Query("ip") String ip,
+                                @Query("contact_id") String contact_id,
+                                @Query("video_id") String video_id);
+
+    //http://dev.view4all.tv/API/api.php?action=watch5
+    @NonNull
+    @POST("api.php?action=watch5")
+    Call<Watch5Response> watch5(@Query("ip") String ip,
+                                @Query("contact_id") String contact_id,
+                                @Query("video_id") String video_id);
+
+    //http://dev.view4all.tv/API/api.php?action=marker_watch
+    @NonNull
+    @POST("api.php?action=marker_watch")
+    Call<WatchMarkerResponse> watchMarker(@Query("ip") String ip,
+                                          @Query("contact_id") String contact_id,
+                                          @Query("video_id") String video_id);
+
+    //http://dev.view4all.tv/API/api.php?action=watch_advert
+    @NonNull
+    @POST("api.php?action=watch_advert")
+    Call<WatchAdvertResponse> watchAdvert(@Query("contact_id") String contact_id,
+                                          @Query("banner") String banner,
+                                          @Query("channel_id") String channel_id);
+
+    //http://dev.view4all.tv/API/api.php?action=channel
+    @NonNull
+    @POST("api.php?action=channel")
+    Call<ChannelResponse> channelRes(@Query("channel_type") String channel_type,
+                                     @Query("contact_id") String contact_id);
 
 }

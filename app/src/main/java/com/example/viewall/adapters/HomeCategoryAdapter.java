@@ -14,8 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.viewall.R;
+import com.example.viewall.activities.HomeActivity;
 import com.example.viewall.activities.SportsActivity;
 import com.example.viewall.activities.VideoShowActivity;
+import com.example.viewall.models.channel.ChannelResponse;
 import com.example.viewall.models.homecategorylist.DataItem;
 import com.example.viewall.models.watchapi.WatchResponse;
 import com.example.viewall.serviceapi.RetrofitClient;
@@ -63,7 +65,10 @@ public class HomeCategoryAdapter extends RecyclerView.Adapter<HomeCategoryAdapte
                 SharePrefrancClass.getInstance(context).savePref("catNameFromHome", dataItem.getName());
 
                 //Calling watch api method
-                callWatchApi(dataItem.getName(), dataItem.getId());
+                /*callWatchApi(dataItem.getName(), dataItem.getId());*/
+
+                //Calling channel api method
+                callChannel(dataItem.getId());
 
                 Intent putDataIntent = new Intent(context, SportsActivity.class);
                 putDataIntent.putExtra("catId", dataItem.getId());
@@ -90,8 +95,27 @@ public class HomeCategoryAdapter extends RecyclerView.Adapter<HomeCategoryAdapte
         }
     }
 
+    private void callChannel(String channelId) {
+        Call<ChannelResponse> call = RetrofitClient.getInstance().getMyApi().channelRes(channelId,
+                SharePrefrancClass.getInstance(context).getPref("phone_number"));
+
+        call.enqueue(new Callback<ChannelResponse>() {
+            @Override
+            public void onResponse(Call<ChannelResponse> call, Response<ChannelResponse> response) {
+                if (response.body() != null){
+                    Log.d("channelres", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChannelResponse> call, Throwable t) {
+                Log.d("channelfail", t.getMessage());
+            }
+        });
+    }
+
     private void callWatchApi(String catName, String catId){
-        Call<WatchResponse> call = RetrofitClient.getInstance().getMyApi().watchApi(catName, strPhoneNumber, catId);
+        Call<WatchResponse> call = RetrofitClient.getInstance().getMyApi().watchApi(/*catName*/catId, strPhoneNumber, catId);
 
         call.enqueue(new Callback<WatchResponse>() {
             @Override

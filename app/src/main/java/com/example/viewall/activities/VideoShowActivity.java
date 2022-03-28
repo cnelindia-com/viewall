@@ -15,8 +15,10 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -37,6 +39,14 @@ import com.example.viewall.models.seenvideolist.SeenVideoResponse;
 import com.example.viewall.models.singlevideo.SingleVideoResponse;
 import com.example.viewall.models.track.TrackResponse;
 import com.example.viewall.models.videosmodel.VideoResponse;
+import com.example.viewall.models.watch1.Watch1Response;
+import com.example.viewall.models.watch2.Watch2Response;
+import com.example.viewall.models.watch3.Watch3Response;
+import com.example.viewall.models.watch4.Watch4Response;
+import com.example.viewall.models.watch5.Watch5Response;
+import com.example.viewall.models.watchadvert.WatchAdvertResponse;
+import com.example.viewall.models.watchapi.WatchResponse;
+import com.example.viewall.models.watchmarker.WatchMarkerResponse;
 import com.example.viewall.models.watchvideo.WatchVideoResponse;
 import com.example.viewall.serviceapi.RetrofitClient;
 import com.example.viewall.utils.DatabaseHandler;
@@ -53,6 +63,7 @@ import com.tonyodev.fetch2core.Func;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,7 +85,7 @@ public class VideoShowActivity extends AppCompatActivity {
     private Fetch fetch;
 
     String strVideoUrlForDownload;
-    String strVideoName, strAddVideoNameUrl, strAddVideoNameToStore;
+    String strVideoName, strAddVideoNameUrl, strAddVideoNameToStore, strAddVideoId;
 
     String strDbVideoName;
     String strPhoneNumber;
@@ -94,6 +105,8 @@ public class VideoShowActivity extends AppCompatActivity {
     ArrayList<com.example.viewall.models.bannerlist.DataItem> bannerList;
 
     RecyclerView categoryWatchedRec;
+
+    int duration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +153,9 @@ public class VideoShowActivity extends AppCompatActivity {
 
         //Call seen video api
         callSeenVideoApi();
+
+        //Calling watch api
+        callWatchApi();
 
         //Call track api
 //        callTrackApi();
@@ -210,7 +226,7 @@ public class VideoShowActivity extends AppCompatActivity {
             f.mkdirs();
         }
 
-        fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()+ "/" + folder_main + "/" + strAddVideoNameToStore  /*+ ".mp4"*/ /*strVideoName*/;
+        fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + folder_main + "/" + strAddVideoNameToStore  /*+ ".mp4"*/ /*strVideoName*/;
         /*fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strAddVideoNameToStore  *//*+ ".mp4"*//* *//*strVideoName*//*;*/
 
 
@@ -262,9 +278,10 @@ public class VideoShowActivity extends AppCompatActivity {
         });
     }
 
-    private void callVideoApi() {
+    //Not usable
+    /*private void callVideoApi() {
 
-        Call<VideoResponse> call = RetrofitClient.getInstance().getMyApi().videoApi(strVideoId, strPhoneNumber /*"3333333333"*/, "675465463");
+        Call<VideoResponse> call = RetrofitClient.getInstance().getMyApi().videoApi(strVideoId, strPhoneNumber *//*"3333333333"*//*, "675465463");
 
         call.enqueue(new Callback<VideoResponse>() {
             @Override
@@ -279,9 +296,10 @@ public class VideoShowActivity extends AppCompatActivity {
                 Log.d("Videoapifail ", t.getMessage());
             }
         });
-    }
+    }*/
 
-    private void callAdvertApi(String currentAddVideoUrl) {
+    //Not usable
+    /*private void callAdvertApi(String currentAddVideoUrl) {
 
         Call<AdvertResponse> call = RetrofitClient.getInstance().getMyApi().advert(currentAddVideoUrl);
 
@@ -298,7 +316,7 @@ public class VideoShowActivity extends AppCompatActivity {
                 Log.d("advertapierror: ", t.getMessage());
             }
         });
-    }
+    }*/
 
     /*private void callTrackApi() {
         progressDialog.show();
@@ -325,6 +343,183 @@ public class VideoShowActivity extends AppCompatActivity {
         });
     }*/
 
+
+    private void callWatchApi(/*String catName, String catId*/) {
+        Call<WatchResponse> call = RetrofitClient.getInstance().getMyApi().watchApi(/*catName*/strVideoId,
+                strPhoneNumber,
+                strVideoId);
+
+        call.enqueue(new Callback<WatchResponse>() {
+            @Override
+            public void onResponse(Call<WatchResponse> call, Response<WatchResponse> response) {
+                if (response.body() != null) {
+                    Log.d("watchapires ", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WatchResponse> call, Throwable t) {
+                Log.d("watchapifail ", t.getMessage());
+            }
+        });
+    }
+
+    private void callWatchAdvert(String imageName) {
+
+        /*String bannerUrl = "";
+        String tempStr = "";
+        for (int i = 0; i < bannerList.size(); i++) {
+            tempStr = bannerList.get(i).getImageUrl().replace("http://dev.view4all.tv/content/", "");
+            bannerUrl = bannerUrl + ", " + tempStr;
+        }
+        Log.d("BANNERURL", bannerUrl);*/
+
+        Call<WatchAdvertResponse> call = RetrofitClient.getInstance().getMyApi().watchAdvert(
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
+                imageName,
+                strVideoId
+        );
+
+        call.enqueue(new Callback<WatchAdvertResponse>() {
+            @Override
+            public void onResponse(Call<WatchAdvertResponse> call, Response<WatchAdvertResponse> response) {
+                if (response.body() != null) {
+                    Log.d("watchadvertsuccess", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WatchAdvertResponse> call, Throwable t) {
+                Log.d("watchadvertfail", t.getMessage());
+            }
+        });
+    }
+
+    private void callWatchMarker() {
+        Call<WatchMarkerResponse> call = RetrofitClient.getInstance().getMyApi().watchMarker("123",
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
+                strVideoId);
+
+        call.enqueue(new Callback<WatchMarkerResponse>() {
+            @Override
+            public void onResponse(Call<WatchMarkerResponse> call, Response<WatchMarkerResponse> response) {
+                if (response.body() != null) {
+                    Log.d("watchmarkersuccess", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WatchMarkerResponse> call, Throwable t) {
+                Log.d("watchmarkerfail", t.getMessage());
+            }
+        });
+    }
+
+    private void callWatch5Api() {
+        Call<Watch5Response> call = RetrofitClient.getInstance().getMyApi().watch5("123",
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
+                strVideoId);
+
+        call.enqueue(new Callback<Watch5Response>() {
+            @Override
+            public void onResponse(Call<Watch5Response> call, Response<Watch5Response> response) {
+                if (response.body() != null) {
+                    Log.d("watch5success", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Watch5Response> call, Throwable t) {
+                Log.d("watch5fail", t.getMessage());
+            }
+        });
+    }
+
+    private void callWatch4Api() {
+        Call<Watch4Response> call = RetrofitClient.getInstance().getMyApi().watch4(/*strAddVideoId*/strChannelName,
+                "123",
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
+                strVideoId);
+
+        call.enqueue(new Callback<Watch4Response>() {
+            @Override
+            public void onResponse(Call<Watch4Response> call, Response<Watch4Response> response) {
+                if (response.body() != null) {
+                    /*callWatchMarker();*/
+                    Log.d("watch4success", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Watch4Response> call, Throwable t) {
+                Log.d("watch4fail", t.getMessage());
+            }
+        });
+    }
+
+    private void callWatch3Api() {
+        Call<Watch3Response> call = RetrofitClient.getInstance().getMyApi().watch3(strAddVideoId,
+                "123",
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
+                strVideoId);
+
+        call.enqueue(new Callback<Watch3Response>() {
+            @Override
+            public void onResponse(Call<Watch3Response> call, Response<Watch3Response> response) {
+                if (response.body() != null) {
+                    Log.d("watch3success", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Watch3Response> call, Throwable t) {
+                Log.d("watch3fail", t.getMessage());
+            }
+        });
+    }
+
+    private void callWatch2Api() {
+
+        Call<Watch2Response> call = RetrofitClient.getInstance().getMyApi().watch2(strAddVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"));
+
+        call.enqueue(new Callback<Watch2Response>() {
+            @Override
+            public void onResponse(Call<Watch2Response> call, Response<Watch2Response> response) {
+                if (response.body() != null) {
+                    Log.d("watch2success", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Watch2Response> call, Throwable t) {
+                Log.d("watch2fail", t.getMessage());
+            }
+        });
+
+    }
+
+    private void callWatch1Api() {
+        Call<Watch1Response> call = RetrofitClient.getInstance().getMyApi().watch1(strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"));
+
+        call.enqueue(new Callback<Watch1Response>() {
+            @Override
+            public void onResponse(Call<Watch1Response> call, Response<Watch1Response> response) {
+                if (response.body() != null) {
+                    Log.d("watch1success", response.body().getStatus());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Watch1Response> call, Throwable t) {
+                Log.d("watch1fail", t.getMessage());
+            }
+        });
+    }
+
     private void callSingleVideoApi() {
         progressDialog.show();
 
@@ -345,10 +540,10 @@ public class VideoShowActivity extends AppCompatActivity {
                     strDbVideoName = response.body().getData().get(0).getDescription().getName();
 
                     //Call advert api method
-                    callAdvertApi(response.body().getData().get(0).getAddUrlVideo());
+                    /*callAdvertApi(response.body().getData().get(0).getAddUrlVideo());*/
 
                     //Call video api method
-                    callVideoApi();
+                    /*callVideoApi();*/
 
                     strVideoName = response.body().getData().get(0).getUrlVideo()
                             .replace("http://dev.view4all.tv/content/", "");
@@ -358,14 +553,19 @@ public class VideoShowActivity extends AppCompatActivity {
 
                     //Add video add name
                     strAddVideoNameUrl = response.body().getData().get(0).getAddUrlVideo();
+                    //Add video id
+                    strAddVideoId = response.body().getData().get(0).getId();
 
                     strVideoUrlForDownload = response.body().getData().get(0).getUrlVideo();
 
                     //Call method for download advert
                     callDownloadAdvt();
 
+
+
                     //Method for try running video
-                    runVideo(response.body().getData().get(0).getUrlVideo());
+                    runVideo(response.body().getData().get(0).getUrlVideo(),
+                            response.body().getData().get(0).getTime());
                 }
             }
 
@@ -377,6 +577,7 @@ public class VideoShowActivity extends AppCompatActivity {
         });
     }
 
+    //Method for save the videos which have seen
     private void callSaveWatchVideoApi() {
 
         Call<WatchVideoResponse> call = RetrofitClient.getInstance().getMyApi().saveWatchVideo(SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("id"),
@@ -399,6 +600,7 @@ public class VideoShowActivity extends AppCompatActivity {
 
     }
 
+    //Method for show the seen videos
     private void callSeenVideoApi() {
         progressDialog.show();
 
@@ -432,7 +634,7 @@ public class VideoShowActivity extends AppCompatActivity {
 
     }
 
-    private void runVideo(String url) {
+    private void runVideo(String url, String timeFromApi) {
         try {
 //            String link="http://s1133.photobucket.com/albums/m590/Anniebabycupcakez/?action=view&amp; current=1376992942447_242.mp4";
             String link = url;
@@ -449,14 +651,66 @@ public class VideoShowActivity extends AppCompatActivity {
             videoView.setVideoURI(video);
             videoView.start();
 
+
+            //Calling watch1 api when ad video start
+            callWatch1Api();
+
+            //Calling watch2 api when ad video start
+            callWatch2Api();
+
             videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     /*Toast.makeText(VideoShowActivity.this, "Complete", Toast.LENGTH_SHORT).show();*/
+                    //Calling watch3 api, when ad video end
+                    callWatch3Api();
+
                     Uri video = Uri.parse(link);
                     videoView.setMediaController(mediaController);
                     videoView.setVideoURI(video);
                     videoView.start();
+
+                    //Calling watch4 api, when video start
+                    callWatch4Api();
+
+                    //Code for convert the hhmmss in seconds
+                    String timeInSeconds = timeFromApi; //mm:ss
+                    String[] units = timeInSeconds.split(":"); //will break the string up into an array
+                    int hours = Integer.parseInt(units[0]);
+                    int minutes = Integer.parseInt(units[1]); //first element
+                    int seconds = Integer.parseInt(units[2]); //second element
+                    int duration = 3600 * hours + 60 * minutes + seconds; //add up our values
+                    int val = 10;
+
+
+                    //Below code for start timer
+                    new CountDownTimer(duration * 1000L, 1000 * 60) {
+
+                        @Override
+                        public void onTick(long l) {
+                            Toast.makeText(VideoShowActivity.this, "onTick", Toast.LENGTH_SHORT).show();
+
+                            if (videoView.isPlaying()){
+                                //Calling the marker api, after one minutes
+                                callWatchMarker();
+                            }
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            Toast.makeText(VideoShowActivity.this, "onFinish", Toast.LENGTH_SHORT).show();
+                        }
+                    }.start();
+
+
+                    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            /*Toast.makeText(VideoShowActivity.this, "Finished", Toast.LENGTH_SHORT).show();*/
+                            //Calling watch5 api, when video end
+                            callWatch5Api();
+                        }
+                    });
 
                 }
             });
@@ -494,6 +748,18 @@ public class VideoShowActivity extends AppCompatActivity {
                     bannerList.addAll(response.body().getData());
                     imageSlider.setSliderAdapter(new HomeAddSliderAdapter(bannerList, VideoShowActivity.this));
                     imageSlider.startAutoCycle();
+
+                    //Code for hit api in for loop
+                    String bannerUrl = "";
+                    String tempStr = "";
+                    for (int i = 0; i < bannerList.size(); i++) {
+                        tempStr = bannerList.get(i).getImageUrl().replace("http://dev.view4all.tv/content/", "");
+                        /*bannerUrl = bannerUrl + ", " + tempStr;*/
+                        //Calling watchadvert api, for send banner image url
+                        callWatchAdvert(tempStr);
+                    }
+
+
                 }
             }
 

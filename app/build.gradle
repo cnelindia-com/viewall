@@ -71,4 +71,7 @@ dependencies {
 
     //Fetch library for download the videos
     implementation "com.tonyodev.fetch2:fetch2:3.0.12"
+
+    //New slider api
+
 }

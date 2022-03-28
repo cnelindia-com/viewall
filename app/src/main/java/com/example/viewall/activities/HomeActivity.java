@@ -7,9 +7,11 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.MenuItem;
 import android.view.Menu;
 import android.view.View;
@@ -35,9 +37,11 @@ import com.example.viewall.serviceapi.RetrofitClient;
 import com.example.viewall.utils.DatabaseHandler;
 import com.example.viewall.utils.SharePrefrancClass;
 import com.google.android.material.navigation.NavigationView;
+import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawController;
 import com.smarteist.autoimageslider.SliderView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
@@ -64,7 +68,7 @@ import retrofit2.Response;
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     Toolbar toolbar;
-    NavigationView navigationView;
+    /*NavigationView navigationView;*/
     TextView tvSports, txtMusic, txtGospel, txtSoap, txtComedy, txtLifestyle, txtCartoons, txtBeauty;
     LinearLayout popularVideoLayoutId;
     ImageView icn_hamburger, img1;
@@ -87,6 +91,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     String fileToDownload;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,6 +167,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 R.drawable.img3,
                 R.drawable.img4,
                 R.drawable.img5};
+
+
+        imageSlider.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                Toast.makeText(HomeActivity.this, view.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         /*popularVideoHomeAdapter = new PopularVideoHomeAdapter(getApplicationContext(), popularImages);
         popularVideoRec.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
@@ -264,15 +277,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 //        setSupportActionBar(binding.appBarHome.toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        /*DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.setDrawerIndicatorEnabled(false);
-        toggle.syncState();
+        toggle.syncState();*/
 
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        /*navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);*/
 
         //Calling index api.
         callIndexApi();
@@ -304,8 +317,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     imageSlider.setSliderAdapter(new HomeAddSliderAdapter(bannerList, HomeActivity.this));
                     imageSlider.startAutoCycle();
 
-                    //Calling index1 api
-                    callIndex1Api();
+
+                    //Code for hit api in for loop
+                    String bannerUrl = "";
+                    String tempStr = "";
+                    for (int i = 0; i < bannerList.size(); i++) {
+                        tempStr = bannerList.get(i).getImageUrl().replace("http://dev.view4all.tv/content/", "");
+                        /*bannerUrl = bannerUrl + ", " + tempStr;*/
+                        //Calling index1 api
+                        callIndex1Api(tempStr);
+                    }
+
+
                 }
             }
 
@@ -344,18 +367,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void callIndex1Api() {
-        String bannerUrl = "";
+    private void callIndex1Api(String imageName) {
+        /*String bannerUrl = "";
         String tempStr = "";
         for (int i = 0; i < bannerList.size(); i++) {
             tempStr = bannerList.get(i).getImageUrl().replace("http://dev.view4all.tv/content/", "");
             bannerUrl = bannerUrl + ", " + tempStr;
         }
-        Log.d("BANNERURL", bannerUrl);
+        Log.d("BANNERURL", bannerUrl);*/
 
         Call<Index1Response> call = RetrofitClient.getInstance().getMyApi().index1(
                 SharePrefrancClass.getInstance(HomeActivity.this).getPref("phone_number"),
-                bannerUrl);
+                imageName);
 
         call.enqueue(new Callback<Index1Response>() {
             @Override
@@ -438,7 +461,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
+        /*int id = item.getItemId();
         Menu menu = navigationView.getMenu();
         if (id == R.id.nav_home) {
             Toast.makeText(HomeActivity.this, "Home clicked", Toast.LENGTH_SHORT).show();
@@ -448,7 +471,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(HomeActivity.this, "Term and conditions", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_contact) {
             Toast.makeText(HomeActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
         return false;
     }

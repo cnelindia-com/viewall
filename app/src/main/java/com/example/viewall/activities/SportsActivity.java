@@ -136,17 +136,17 @@ public class SportsActivity extends AppCompatActivity {
         });
     }
 
-    private void callChannel1Api() {
-        String bannerUrl = "";
+    private void callChannel1Api(String imageName) {
+        /*String bannerUrl = "";
         String tempStr = "";
         for (int i=0; i<bannerList.size(); i++){
             tempStr = bannerList.get(i).getImageUrl().replace("http://dev.view4all.tv/content/", "");
             bannerUrl = bannerUrl + ", " + tempStr;
-            /*bannerUrl = bannerUrl + ", " + bannerList.get(i).getImageUrl();*/
+            *//*bannerUrl = bannerUrl + ", " + bannerList.get(i).getImageUrl();*//*
         }
-        Log.d("ChannelBANNERURL", bannerUrl);
+        Log.d("ChannelBANNERURL", bannerUrl);*/
 
-        Call<Channel1Response> call = RetrofitClient.getInstance().getMyApi().channel1(bannerUrl,
+        Call<Channel1Response> call = RetrofitClient.getInstance().getMyApi().channel1(imageName,
                 SharePrefrancClass.getInstance(SportsActivity.this).getPref("phone_number"));
 
         call.enqueue(new Callback<Channel1Response>() {
@@ -180,8 +180,17 @@ public class SportsActivity extends AppCompatActivity {
                     imageSliderCat.setSliderAdapter(new HomeAddSliderAdapter(bannerList, SportsActivity.this));
                     imageSliderCat.startAutoCycle();
 
-                    //Calling channel1 api
-                    callChannel1Api();
+                    //Code for hit api in for loop
+                    String bannerUrl = "";
+                    String tempStr = "";
+                    for (int i = 0; i < bannerList.size(); i++) {
+                        tempStr = bannerList.get(i).getImageUrl().replace("http://dev.view4all.tv/content/", "");
+                        /*bannerUrl = bannerUrl + ", " + tempStr;*/
+                        //Calling channel1 api
+                        callChannel1Api(tempStr);
+                    }
+
+
                 }
             }
 
