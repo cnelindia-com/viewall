@@ -688,7 +688,7 @@ public class VideoShowActivity extends AppCompatActivity {
 
                         @Override
                         public void onTick(long l) {
-                            Toast.makeText(VideoShowActivity.this, "onTick", Toast.LENGTH_SHORT).show();
+                            /*Toast.makeText(VideoShowActivity.this, "onTick", Toast.LENGTH_SHORT).show();*/
 
                             if (videoView.isPlaying()){
                                 //Calling the marker api, after one minutes
@@ -698,7 +698,7 @@ public class VideoShowActivity extends AppCompatActivity {
 
                         @Override
                         public void onFinish() {
-                            Toast.makeText(VideoShowActivity.this, "onFinish", Toast.LENGTH_SHORT).show();
+                            /*Toast.makeText(VideoShowActivity.this, "onFinish", Toast.LENGTH_SHORT).show();*/
                         }
                     }.start();
 

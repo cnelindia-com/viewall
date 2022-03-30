@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +40,13 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
 
         holder.videoNameId.setText(videoModel.getName());
         holder.videoUrlId.setText(videoModel.getVideoUrl());
+
+        holder.rootLayoutId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Work in progress.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
