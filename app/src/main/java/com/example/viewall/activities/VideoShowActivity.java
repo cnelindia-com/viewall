@@ -33,6 +33,7 @@ import com.example.viewall.adapters.HomeAddSliderAdapter;
 import com.example.viewall.adapters.SeenVideoAdapter;
 import com.example.viewall.models.advert.AdvertResponse;
 import com.example.viewall.models.bannerlist.BannerResponse;
+import com.example.viewall.models.databasemodels.AddVideoModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 import com.example.viewall.models.seenvideolist.DataItem;
 import com.example.viewall.models.seenvideolist.SeenVideoResponse;
@@ -241,6 +242,7 @@ public class VideoShowActivity extends AppCompatActivity {
                 Toast.makeText(VideoShowActivity.this, "Successful", Toast.LENGTH_SHORT).show();
                 //Code for save data in the database
                 /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));*/
+                databaseHandler.addDataToAd(new AddVideoModel(fileToDownload));
             }
         }, new Func<Error>() {
             @Override

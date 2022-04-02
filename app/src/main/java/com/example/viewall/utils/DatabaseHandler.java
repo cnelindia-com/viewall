@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.viewall.models.databasemodels.AddVideoModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 
 import java.util.ArrayList;
@@ -15,9 +16,10 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 10;
     private static final String DATABASE_NAME = "urlListDataBase";
     private static final String TABLE_VIDEOS = "videosurl";
+    private static final String TABLE_VIDEOS_ADD = "addvideosurl";
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_VIDEO_PATH = "path";
@@ -36,19 +38,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + "path" + " TEXT"
                 + ")";
 
+        String CREATE_VIDEOS_ADD_TABLE = "CREATE TABLE " + TABLE_VIDEOS_ADD +
+                "("
+                + "id" + " INTEGER PRIMARY KEY,"
+                + "adpath" + " TEXT"
+                + ")";
+
         sqLiteDatabase.execSQL(CREATE_VIDEOS_TABLE);
+        sqLiteDatabase.execSQL(CREATE_VIDEOS_ADD_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         // Drop older table if existed
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_VIDEOS);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_VIDEOS_ADD);
 
         // Create tables again
         onCreate(sqLiteDatabase);
     }
 
-    //Code to add new data
+    //Code to add new data in the videosurl table
     public void addData(VideoModel videoUrl) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -70,6 +80,41 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    //Code to add new data in the addvideosurl table
+    public void addDataToAd(AddVideoModel addVideoModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("adpath", addVideoModel.getAddvideoUrl());
+
+        //Inserting Row
+        db.insert(TABLE_VIDEOS_ADD, null, values);
+
+        db.close();
+    }
+
+    //Codd for get the list of ad videos url from addvideosurl
+    public List<AddVideoModel> getAllAdVideoData() {
+        List<AddVideoModel> addVideoData = new ArrayList<>();
+
+        String selectQuery = "SELECT * FROM " + TABLE_VIDEOS_ADD;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                AddVideoModel addVideoModel = new AddVideoModel();
+                addVideoModel.set_id(Integer.parseInt(cursor.getString(0)));
+                addVideoModel.setAddvideoUrl(cursor.getString(1));
+
+                //Adding advideomodel to list
+                addVideoData.add(addVideoModel);
+            } while (cursor.moveToNext());
+        }
+
+        return addVideoData;
+    }
+
     //Code for get the list of videos url and name
     public List<VideoModel> getAllVideoData(){
         List<VideoModel> videosData = new ArrayList<>();
@@ -89,7 +134,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 videosData.add(videoModel);
             } while (cursor.moveToNext());
         }
-
 
         return videosData;
     }

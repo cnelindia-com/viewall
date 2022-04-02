@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.Window;
 import com.example.viewall.R;
 import com.example.viewall.adapters.OfflineVideoAdapter;
+import com.example.viewall.models.databasemodels.AddVideoModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 import com.example.viewall.utils.DatabaseHandler;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public class DownloanActivity extends AppCompatActivity {
 
     List<VideoModel> offlineData;
+    List<AddVideoModel> offLineAddData;
     DatabaseHandler databaseHandler;
 
     RecyclerView downloadRec;
@@ -35,9 +37,13 @@ public class DownloanActivity extends AppCompatActivity {
         //Call get data method for get data from database
         offlineData = databaseHandler.getAllVideoData();
 
+        //Call get data from ad video from addvideosurl table
+        offLineAddData = databaseHandler.getAllAdVideoData();
+
         downloadRec = findViewById(R.id.downloadRec);
 
-        offlineVideoAdapter = new OfflineVideoAdapter(DownloanActivity.this, offlineData);
+        /*offlineVideoAdapter = new OfflineVideoAdapter(DownloanActivity.this, offlineData);*/
+        offlineVideoAdapter = new OfflineVideoAdapter(DownloanActivity.this, offlineData, offLineAddData);
         downloadRec.setLayoutManager(new LinearLayoutManager(DownloanActivity.this, RecyclerView.VERTICAL, false));
         downloadRec.setAdapter(offlineVideoAdapter);
 

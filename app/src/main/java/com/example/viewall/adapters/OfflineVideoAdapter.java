@@ -1,6 +1,7 @@
 package com.example.viewall.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.viewall.R;
+import com.example.viewall.activities.VideoShowActivity;
+import com.example.viewall.activities.VideoShowActivityOffline;
+import com.example.viewall.models.databasemodels.AddVideoModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 
 import java.util.List;
@@ -20,11 +24,18 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
 
     Context context;
     List<VideoModel> list;
+    List<AddVideoModel> adList;
 
-    public OfflineVideoAdapter(Context context, List<VideoModel> list) {
+    public OfflineVideoAdapter(Context context, List<VideoModel> list, List<AddVideoModel> adList) {
         this.context = context;
         this.list = list;
+        this.adList = adList;
     }
+
+    /*public OfflineVideoAdapter(Context context, List<VideoModel> list) {
+        this.context = context;
+        this.list = list;
+    }*/
 
     @NonNull
     @Override
@@ -37,6 +48,7 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
     @Override
     public void onBindViewHolder(@NonNull OfflineVideoAdapter.OfflineViewHolder holder, int position) {
         VideoModel videoModel = list.get(position);
+        AddVideoModel adVideoModel = adList.get(position);
 
         holder.videoNameId.setText(videoModel.getName());
         holder.videoUrlId.setText(videoModel.getVideoUrl());
@@ -44,7 +56,13 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
         holder.rootLayoutId.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "Work in progress.", Toast.LENGTH_SHORT).show();
+                /*Toast.makeText(context, "Work in progress.", Toast.LENGTH_SHORT).show();*/
+                Intent intentOffline = new Intent(context, VideoShowActivityOffline.class);
+                intentOffline.putExtra("videoNameOffline", videoModel.getName());
+                intentOffline.putExtra("videoUrlOffline", videoModel.getVideoUrl());
+                intentOffline.putExtra("adVideoUrlOffline", adVideoModel.getAddvideoUrl());
+
+                context.startActivity(intentOffline);
             }
         });
     }
