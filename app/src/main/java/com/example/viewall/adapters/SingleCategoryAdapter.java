@@ -156,7 +156,7 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
             @Override
             public void call(@NonNull Request result) {
                 Toast.makeText(context, "Successful", Toast.LENGTH_SHORT).show();
-                databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));
+                /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));*/
             }
         }, new Func<Error>() {
             @Override

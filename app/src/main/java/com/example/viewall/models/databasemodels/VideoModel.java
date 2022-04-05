@@ -5,6 +5,13 @@ public class VideoModel {
     int _id;
     String name;
     String videoUrl;
+    String videoId;
+
+    public VideoModel(String name, String videoUrl, String videoId) {
+        this.name = name;
+        this.videoUrl = videoUrl;
+        this.videoId = videoId;
+    }
 
     public VideoModel() {
     }
@@ -18,6 +25,14 @@ public class VideoModel {
         this._id = _id;
         this.name = name;
         this.videoUrl = videoUrl;
+    }
+
+    public String getVideoId() {
+        return videoId;
+    }
+
+    public void setVideoId(String videoId) {
+        this.videoId = videoId;
     }
 
     public int get_id() {

@@ -60,6 +60,7 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
                 Intent intentOffline = new Intent(context, VideoShowActivityOffline.class);
                 intentOffline.putExtra("videoNameOffline", videoModel.getName());
                 intentOffline.putExtra("videoUrlOffline", videoModel.getVideoUrl());
+                intentOffline.putExtra("videoIdOffline", videoModel.getVideoId());
                 intentOffline.putExtra("adVideoUrlOffline", adVideoModel.getAddvideoUrl());
 
                 context.startActivity(intentOffline);

@@ -270,7 +270,7 @@ public class VideoShowActivity extends AppCompatActivity {
             @Override
             public void call(@NonNull Request result) {
                 Toast.makeText(VideoShowActivity.this, "Successful", Toast.LENGTH_SHORT).show();
-                databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));
+                databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId));
             }
         }, new Func<Error>() {
             @Override

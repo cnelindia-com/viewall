@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.viewall.models.databasemodels.AddVideoModel;
+import com.example.viewall.models.databasemodels.TableOfflineModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 
 import java.util.ArrayList;
@@ -16,10 +17,11 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 12;
     private static final String DATABASE_NAME = "urlListDataBase";
     private static final String TABLE_VIDEOS = "videosurl";
     private static final String TABLE_VIDEOS_ADD = "addvideosurl";
+    private static final String TABLE_OFFLINE = "tableoffline";
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_VIDEO_PATH = "path";
@@ -35,7 +37,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 "("
                 + "id" + " INTEGER PRIMARY KEY,"
                 + "name" + " TEXT,"
-                + "path" + " TEXT"
+                + "path" + " TEXT,"
+                + "videoid" + " TEXT"
                 + ")";
 
         String CREATE_VIDEOS_ADD_TABLE = "CREATE TABLE " + TABLE_VIDEOS_ADD +
@@ -44,8 +47,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + "adpath" + " TEXT"
                 + ")";
 
+        String CREATE_TABLE_OFFLINE = "CREATE TABLE " + TABLE_OFFLINE +
+                "("
+                + "id" + " INTEGER PRIMARY KEY,"
+                + "adstart" + " TEXT,"
+                + "videostart" + " TEXT,"
+                + "videoid" + " TEXT,"
+                + "contactid" + " TEXT,"
+                + "datetime" + " TEXT,"
+                + "videoend" + " TEXT"
+                + ")";
+
         sqLiteDatabase.execSQL(CREATE_VIDEOS_TABLE);
         sqLiteDatabase.execSQL(CREATE_VIDEOS_ADD_TABLE);
+        sqLiteDatabase.execSQL(CREATE_TABLE_OFFLINE);
     }
 
     @Override
@@ -53,9 +68,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Drop older table if existed
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_VIDEOS);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_VIDEOS_ADD);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_OFFLINE);
 
         // Create tables again
         onCreate(sqLiteDatabase);
+    }
+
+    //Code to add new offline data in tableoffline table
+    public void addOfflineData(TableOfflineModel tableOfflineModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("adstart", tableOfflineModel.getAdStart());
+        values.put("videostart", tableOfflineModel.getVideoStart());
+        values.put("videoid", tableOfflineModel.getVideoId());
+        values.put("contactid", tableOfflineModel.getContactId());
+        values.put("datetime", tableOfflineModel.getDatetime());
+        values.put("videoend", tableOfflineModel.getVideoend());
+
+        //Inserting Row
+        db.insert(TABLE_OFFLINE, null, values);
+
+        db.close();
     }
 
     //Code to add new data in the videosurl table
@@ -65,6 +99,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("name", videoUrl.getName());
         values.put("path", videoUrl.getVideoUrl());
+        values.put("videoid", videoUrl.getVideoId());
 
         //Inserting Row
         db.insert(TABLE_VIDEOS, null, values);
@@ -93,7 +128,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    //Codd for get the list of ad videos url from addvideosurl
+    //Code for get the data from offlinetable
+    public List<TableOfflineModel> getAddOffTableData() {
+        List<TableOfflineModel> offlineModelList = new ArrayList<>();
+
+        String selectQuery = "SELECT * FROM " + TABLE_OFFLINE;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                TableOfflineModel tableOfflineModel = new TableOfflineModel();
+                tableOfflineModel.set_id(Integer.parseInt(cursor.getString(0)));
+                tableOfflineModel.setAdStart(cursor.getString(1));
+                tableOfflineModel.setVideoStart(cursor.getString(2));
+                tableOfflineModel.setVideoId(cursor.getString(3));
+                tableOfflineModel.setContactId(cursor.getString(4));
+                tableOfflineModel.setDatetime(cursor.getString(5));
+                tableOfflineModel.setDatetime(cursor.getString(6));
+
+                //Adding model to list
+                offlineModelList.add(tableOfflineModel);
+            } while (cursor.moveToNext());
+        }
+        return offlineModelList;
+    }
+
+    //Code for get the list of ad videos url from addvideosurl
     public List<AddVideoModel> getAllAdVideoData() {
         List<AddVideoModel> addVideoData = new ArrayList<>();
 
@@ -129,6 +190,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 videoModel.set_id(Integer.parseInt(cursor.getString(0)));
                 videoModel.setName(cursor.getString(1));
                 videoModel.setVideoUrl(cursor.getString(2));
+                videoModel.setVideoId(cursor.getString(3));
 
                 //Adding videomodel to list
                 videosData.add(videoModel);
