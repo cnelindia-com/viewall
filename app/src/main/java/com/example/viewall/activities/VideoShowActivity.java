@@ -1,6 +1,7 @@
 package com.example.viewall.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -50,20 +51,25 @@ import com.example.viewall.models.watchapi.WatchResponse;
 import com.example.viewall.models.watchmarker.WatchMarkerResponse;
 import com.example.viewall.models.watchvideo.WatchVideoResponse;
 import com.example.viewall.serviceapi.RetrofitClient;
+import com.example.viewall.utils.CustomVideoView;
 import com.example.viewall.utils.DatabaseHandler;
 import com.example.viewall.utils.ScalableVideoView;
 import com.example.viewall.utils.SharePrefrancClass;
 import com.smarteist.autoimageslider.SliderView;
+import com.tonyodev.fetch2.Download;
 import com.tonyodev.fetch2.Error;
 import com.tonyodev.fetch2.Fetch;
 import com.tonyodev.fetch2.FetchConfiguration;
+import com.tonyodev.fetch2.FetchListener;
 import com.tonyodev.fetch2.NetworkType;
 import com.tonyodev.fetch2.Priority;
 import com.tonyodev.fetch2.Request;
+import com.tonyodev.fetch2core.DownloadBlock;
 import com.tonyodev.fetch2core.Func;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
@@ -86,7 +92,7 @@ public class VideoShowActivity extends AppCompatActivity {
     private Fetch fetch;
 
     String strVideoUrlForDownload;
-    String strVideoName, strAddVideoNameUrl, strAddVideoNameToStore, strAddVideoId;
+    String strVideoName, strAddVideoNameUrl, strAddVideoNameToStore, strAddVideoId, strVideoTime;
 
     String strDbVideoName;
     String strPhoneNumber;
@@ -242,7 +248,7 @@ public class VideoShowActivity extends AppCompatActivity {
                 Toast.makeText(VideoShowActivity.this, "Successful", Toast.LENGTH_SHORT).show();
                 //Code for save data in the database
                 /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));*/
-                databaseHandler.addDataToAd(new AddVideoModel(fileToDownload));
+                databaseHandler.addDataToAd(new AddVideoModel(fileToDownload, strAddVideoNameToStore));
             }
         }, new Func<Error>() {
             @Override
@@ -266,16 +272,21 @@ public class VideoShowActivity extends AppCompatActivity {
         request.setNetworkType(NetworkType.ALL);
         request.addHeader("clientKey", "SD78DF93_3947&MVNGHE1WONG");
 
+        fetch.addListener(fetchListener);
+
         fetch.enqueue(request, new Func<Request>() {
             @Override
             public void call(@NonNull Request result) {
                 Toast.makeText(VideoShowActivity.this, "Successful", Toast.LENGTH_SHORT).show();
-                databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId));
+                /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId,
+                        strVideoTime));*/
+
             }
         }, new Func<Error>() {
             @Override
             public void call(@NonNull Error result) {
                 Toast.makeText(VideoShowActivity.this, result.toString(), Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -460,7 +471,8 @@ public class VideoShowActivity extends AppCompatActivity {
     }
 
     private void callWatch3Api() {
-        Call<Watch3Response> call = RetrofitClient.getInstance().getMyApi().watch3(strAddVideoId,
+        Call<Watch3Response> call = RetrofitClient.getInstance().getMyApi().watch3(/*strAddVideoId*/
+                strAddVideoNameToStore,
                 "123",
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
                 strVideoId);
@@ -482,9 +494,11 @@ public class VideoShowActivity extends AppCompatActivity {
 
     private void callWatch2Api() {
 
-        Call<Watch2Response> call = RetrofitClient.getInstance().getMyApi().watch2(strAddVideoId,
+        Call<Watch2Response> call = RetrofitClient.getInstance().getMyApi().watch2(/*strAddVideoId*/
+                strAddVideoNameToStore,
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
-                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"));
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"),
+                "123");
 
         call.enqueue(new Callback<Watch2Response>() {
             @Override
@@ -563,7 +577,8 @@ public class VideoShowActivity extends AppCompatActivity {
                     //Call method for download advert
                     callDownloadAdvt();
 
-
+                    //Assign time value to string
+                    strVideoTime = response.body().getData().get(0).getTime();
 
                     //Method for try running video
                     runVideo(response.body().getData().get(0).getUrlVideo(),
@@ -640,9 +655,11 @@ public class VideoShowActivity extends AppCompatActivity {
         try {
 //            String link="http://s1133.photobucket.com/albums/m590/Anniebabycupcakez/?action=view&amp; current=1376992942447_242.mp4";
             String link = url;
-            ScalableVideoView videoView = findViewById(R.id.VideoView);
+            /*ScalableVideoView videoView = findViewById(R.id.VideoView);*/
+            CustomVideoView videoView = findViewById(R.id.VideoView);
 
             progressbarVideo.setVisibility(View.VISIBLE);
+
 
             MediaController mediaController = new MediaController(this);
             mediaController.setAnchorView(videoView);
@@ -671,6 +688,18 @@ public class VideoShowActivity extends AppCompatActivity {
                     videoView.setMediaController(mediaController);
                     videoView.setVideoURI(video);
                     videoView.start();
+
+                    videoView.setPlayPauseListener(new CustomVideoView.PlayPauseListener() {
+                        @Override
+                        public void onPlay() {
+                            /*Toast.makeText(VideoShowActivity.this, "OnPlay Called", Toast.LENGTH_SHORT).show();*/
+                        }
+
+                        @Override
+                        public void onPause() {
+                            /*Toast.makeText(VideoShowActivity.this, "OnPause Called", Toast.LENGTH_SHORT).show();*/
+                        }
+                    });
 
                     //Calling watch4 api, when video start
                     callWatch4Api();
@@ -772,4 +801,79 @@ public class VideoShowActivity extends AppCompatActivity {
             }
         });
     }
+
+    //Code for fetchlistener
+    FetchListener fetchListener = new FetchListener() {
+        @Override
+        public void onAdded(@NonNull Download download) {
+            //This method is called first time when download the file
+            Toast.makeText(VideoShowActivity.this, "First download", Toast.LENGTH_SHORT).show();
+            databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId,
+                    strVideoTime));
+        }
+
+        @Override
+        public void onQueued(@NonNull Download download, boolean b) {
+
+        }
+
+        @Override
+        public void onWaitingNetwork(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onCompleted(@NonNull Download download) {
+            //This method called every time when we download the file
+            fetch.removeListener(fetchListener);
+            Toast.makeText(VideoShowActivity.this, "Download finished", Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onError(@NonNull Download download, @NonNull Error error, @Nullable Throwable throwable) {
+
+        }
+
+        @Override
+        public void onDownloadBlockUpdated(@NonNull Download download, @NonNull DownloadBlock downloadBlock, int i) {
+
+        }
+
+        @Override
+        public void onStarted(@NonNull Download download, @NonNull List<? extends DownloadBlock> list, int i) {
+
+        }
+
+        @Override
+        public void onProgress(@NonNull Download download, long l, long l1) {
+            //This method show the progress of download and time
+            Toast.makeText(VideoShowActivity.this, String.valueOf(l), Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onPaused(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onResumed(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onRemoved(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onDeleted(@NonNull Download download) {
+
+        }
+    };
 }

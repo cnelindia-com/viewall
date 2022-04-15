@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.example.viewall.serviceapi.RetrofitClient;
 import com.example.viewall.utils.SharePrefrancClass;
 
 import java.net.NetworkInterface;
+import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,6 +58,10 @@ public class RegisterActivity extends AppCompatActivity {
         lastname = findViewById(R.id.lastname);
         email = findViewById(R.id.email);
         email.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+
+        /*NumberFormat.getInstance().format(email.getText().toString());*/
+
+        PhoneNumberUtils.formatNumber(email.getText().toString());
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override

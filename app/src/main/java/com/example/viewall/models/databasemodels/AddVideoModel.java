@@ -4,12 +4,27 @@ public class AddVideoModel {
 
     int _id;
     String addvideoUrl;
+    String addname;
+
+    public AddVideoModel(String addvideoUrl, String addname) {
+        this.addvideoUrl = addvideoUrl;
+        this.addname = addname;
+    }
 
     public AddVideoModel() {
     }
 
+
     public AddVideoModel(String addvideoUrl) {
         this.addvideoUrl = addvideoUrl;
+    }
+
+    public String getAddname() {
+        return addname;
+    }
+
+    public void setAddname(String addname) {
+        this.addname = addname;
     }
 
     public int get_id() {

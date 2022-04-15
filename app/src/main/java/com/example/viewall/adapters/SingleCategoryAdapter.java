@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -21,15 +22,19 @@ import com.example.viewall.models.databasemodels.VideoModel;
 import com.example.viewall.models.singlecategorylist.DataItem;
 import com.example.viewall.models.singlecategorylist.HeaderItem;
 import com.example.viewall.utils.DatabaseHandler;
+import com.tonyodev.fetch2.Download;
 import com.tonyodev.fetch2.Error;
 import com.tonyodev.fetch2.Fetch;
 import com.tonyodev.fetch2.FetchConfiguration;
+import com.tonyodev.fetch2.FetchListener;
 import com.tonyodev.fetch2.NetworkType;
 import com.tonyodev.fetch2.Priority;
 import com.tonyodev.fetch2.Request;
+import com.tonyodev.fetch2core.DownloadBlock;
 import com.tonyodev.fetch2core.Func;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAdapter.SingleCatHolder> {
 
@@ -45,7 +50,7 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
     //Creating reference variable of fetch
     private Fetch fetch;
 
-    String strDbVideoName;
+    String strDbVideoName, strVideoId, strVideoTime;
 
     public SingleCategoryAdapter(Context context, ArrayList<DataItem> list, ArrayList<HeaderItem> listHeader) {
         this.context = context;
@@ -106,12 +111,16 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
             public void onClick(View view) {
                 Toast.makeText(context, "VIDEO URL : " + dataItem.getUrlVideo(), Toast.LENGTH_SHORT).show();
                 strDbVideoName = dataItem.getDescription().getName();
+                strVideoId = dataItem.getId();
+                strVideoTime = dataItem.getTime();
                 strVideoUrlForDownload = dataItem.getUrlVideo();
 
                 strVideoName = dataItem.getUrlVideo()
                         .replace("http://dev.view4all.tv/content/", "");
+
                 //Call download method here
-                callDownload();
+                callDownload(dataItem.getDescription().getName(), dataItem.getId(),
+                        dataItem.getTime());
             }
         });
     }
@@ -138,12 +147,12 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
     }
 
     //Method for call the download function
-    private void callDownload() {
+    private void callDownload(String dbVideoName, String videoId, String videoTime) {
 
         /*fileToDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 .toString() + "/view4all/" + strVideoName;*/
 
-        fileToDownload = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strDbVideoName + ".mp4" /*strVideoName*/;
+        fileToDownload = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strDbVideoName/*strDbVideoName*/ + ".mp4" /*strVideoName*/;
 
 //        databaseHandler.addData(new VideoModel("videoname", fileToDownload));
 
@@ -152,11 +161,14 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
         request.setNetworkType(NetworkType.ALL);
         request.addHeader("clientKey", "SD78DF93_3947&MVNGHE1WONG");
 
+        fetch.addListener(fetchListener);
+
         fetch.enqueue(request, new Func<Request>() {
             @Override
             public void call(@NonNull Request result) {
                 Toast.makeText(context, "Successful", Toast.LENGTH_SHORT).show();
-                /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));*/
+                /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId,
+                        strVideoTime));*/
             }
         }, new Func<Error>() {
             @Override
@@ -165,4 +177,77 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
             }
         });
     }
+
+    FetchListener fetchListener = new FetchListener() {
+        @Override
+        public void onAdded(@NonNull Download download) {
+            //This method is called first time when download the file
+            Toast.makeText(context, "First download", Toast.LENGTH_SHORT).show();
+            databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId,
+                    strVideoTime));
+        }
+
+        @Override
+        public void onQueued(@NonNull Download download, boolean b) {
+
+        }
+
+        @Override
+        public void onWaitingNetwork(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onCompleted(@NonNull Download download) {
+            //This method called every time when we download the file
+            fetch.removeListener(fetchListener);
+            Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onError(@NonNull Download download, @NonNull Error error, @Nullable Throwable throwable) {
+
+        }
+
+        @Override
+        public void onDownloadBlockUpdated(@NonNull Download download, @NonNull DownloadBlock downloadBlock, int i) {
+
+        }
+
+        @Override
+        public void onStarted(@NonNull Download download, @NonNull List<? extends DownloadBlock> list, int i) {
+
+        }
+
+        @Override
+        public void onProgress(@NonNull Download download, long l, long l1) {
+            //This method show the progress of download and time
+            Toast.makeText(context, String.valueOf(l), Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onPaused(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onResumed(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onRemoved(@NonNull Download download) {
+
+        }
+
+        @Override
+        public void onDeleted(@NonNull Download download) {
+
+        }
+    };
 }

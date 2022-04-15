@@ -45,7 +45,7 @@ public class BaseUrlActivity extends AppCompatActivity {
         baseUrlId = findViewById(R.id.baseUrlId);
 
         //code for permission.
-        if (ActivityCompat.checkSelfPermission(BaseUrlActivity.this,
+        /*if (ActivityCompat.checkSelfPermission(BaseUrlActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(BaseUrlActivity.this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -54,13 +54,13 @@ public class BaseUrlActivity extends AppCompatActivity {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
             }, REQ_CODE);
         } else {
-            /*Toast.makeText(VideoShowActivity.this, "Permission Granted.", Toast.LENGTH_SHORT).show();*/
+            *//*Toast.makeText(VideoShowActivity.this, "Permission Granted.", Toast.LENGTH_SHORT).show();*//*
 //                    startActivity(new Intent(VideoShowActivity.this, SyncDataActivity.class));
-            /*callDownload();*/
+            *//*callDownload();*//*
             //Code for create folder
             File dir = new File(Environment.getExternalStorageDirectory() + "/Download/view4all/");
             dir.mkdirs(); // creates needed dirs
-        }
+        }*/
 
 
 
@@ -86,17 +86,17 @@ public class BaseUrlActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
+        /*switch (requestCode) {
             case REQ_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission granted
-                    /*Toast.makeText(this, "Request permission method", Toast.LENGTH_SHORT).show();*/
-                    /*startActivity(new Intent(VideoShowActivity.this, SyncDataActivity.class));*/
+                    *//*Toast.makeText(this, "Request permission method", Toast.LENGTH_SHORT).show();*//*
+                    *//*startActivity(new Intent(VideoShowActivity.this, SyncDataActivity.class));*//*
 //                    callDownload();
                 } else {
                     finishAffinity();
                 }
                 break;
-        }
+        }*/
     }
 }

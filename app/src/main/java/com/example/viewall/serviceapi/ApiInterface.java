@@ -11,10 +11,12 @@ import com.example.viewall.models.bannerlist.BannerResponse;
 import com.example.viewall.models.channel.ChannelResponse;
 import com.example.viewall.models.channel1.Channel1Response;
 import com.example.viewall.models.contact.ContactResponse;
+import com.example.viewall.models.databasemodels.TableOfflineModel;
 import com.example.viewall.models.getuser.GetUserResponse;
 import com.example.viewall.models.homecategorylist.HomeCategoryResponse;
 import com.example.viewall.models.index.IndexResponse;
 import com.example.viewall.models.index1.Index1Response;
+import com.example.viewall.models.offlineupdate.OfflineDataResponse;
 import com.example.viewall.models.popularviedos.PopularVideoResponse;
 import com.example.viewall.models.register.RegisterResponse;
 import com.example.viewall.models.seenvideolist.SeenVideoResponse;
@@ -32,11 +34,16 @@ import com.example.viewall.models.watchapi.WatchResponse;
 import com.example.viewall.models.watchmarker.WatchMarkerResponse;
 import com.example.viewall.models.watchvideo.WatchVideoResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
@@ -164,7 +171,8 @@ public interface ApiInterface {
     @POST("api.php?action=watch2")
     Call<Watch2Response> watch2(@Query("ad_id") String ad_id,
                                 @Query("contact_id") String contact_id,
-                                @Query("channel_id") String channel_id);
+                                @Query("channel_id") String channel_id,
+                                @Query("ip") String ip);
 
     //http://dev.view4all.tv/API/api.php?action=watch3
     @NonNull
@@ -208,5 +216,12 @@ public interface ApiInterface {
     @POST("api.php?action=channel")
     Call<ChannelResponse> channelRes(@Query("channel_type") String channel_type,
                                      @Query("contact_id") String contact_id);
+
+    //http://dev.view4all.tv/API/api.php?action=offline_watch_data
+    @NonNull
+    @Multipart
+    @POST("api.php?action=offline_watch_data")
+    Call<OfflineDataResponse> offlineWatch(@Part("offline_data[]") List<TableOfflineModel> contact_list
+                                           /*@Query("offline_data") String offline_data*/);
 
 }

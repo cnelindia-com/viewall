@@ -68,7 +68,12 @@
                 android:layout_gravity="center"
                 android:visibility="gone" />
 
-            <com.example.viewall.utils.ScalableVideoView
+            <!--<com.example.viewall.utils.ScalableVideoView
+                android:id="@+id/VideoView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>-->
+
+            <com.example.viewall.utils.CustomVideoView
                 android:id="@+id/VideoView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
@@ -221,7 +226,7 @@
                 app:sliderIndicatorMargin="15dp"
                 app:sliderIndicatorOrientation="horizontal"
                 app:sliderIndicatorPadding="3dp"
-                app:sliderIndicatorRadius="2dp"
+                app:sliderIndicatorRadius="0dp"
                 app:sliderIndicatorSelectedColor="#5A5A5A"
                 app:sliderIndicatorUnselectedColor="#FFF"
                 app:sliderScrollTimeInSec="3"

@@ -16,6 +16,7 @@ import com.example.viewall.R;
 import com.example.viewall.activities.VideoShowActivity;
 import com.example.viewall.activities.VideoShowActivityOffline;
 import com.example.viewall.models.databasemodels.AddVideoModel;
+import com.example.viewall.models.databasemodels.TableBannerModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 
 import java.util.List;
@@ -61,7 +62,9 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
                 intentOffline.putExtra("videoNameOffline", videoModel.getName());
                 intentOffline.putExtra("videoUrlOffline", videoModel.getVideoUrl());
                 intentOffline.putExtra("videoIdOffline", videoModel.getVideoId());
+                intentOffline.putExtra("videoTimeOffline", videoModel.getVideotime());
                 intentOffline.putExtra("adVideoUrlOffline", adVideoModel.getAddvideoUrl());
+                intentOffline.putExtra("adVideoNameOffline", adVideoModel.getAddname());
 
                 context.startActivity(intentOffline);
             }

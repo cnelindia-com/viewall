@@ -67,7 +67,11 @@
                 android:layout_gravity="center"
                 android:visibility="gone" />
 
-            <com.example.viewall.utils.ScalableVideoView
+            <!--<com.example.viewall.utils.ScalableVideoView
+                android:id="@+id/VideoView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>-->
+            <com.example.viewall.utils.CustomVideoView
                 android:id="@+id/VideoView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
@@ -125,6 +129,45 @@
                     android:textSize="15dp"
                     android:textStyle="bold" />
             </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:background="@color/white"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="5dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/addicon" />
+
+            <com.smarteist.autoimageslider.SliderView
+                android:id="@+id/imageSlider"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:sliderAnimationDuration="600"
+                app:sliderAutoCycleDirection="right"
+                app:sliderAutoCycleEnabled="true"
+                app:sliderIndicatorAnimationDuration="600"
+                app:sliderIndicatorGravity="center_horizontal|bottom"
+                app:sliderIndicatorMargin="15dp"
+                app:sliderIndicatorOrientation="horizontal"
+                app:sliderIndicatorPadding="3dp"
+                app:sliderIndicatorRadius="0dp"
+                app:sliderIndicatorSelectedColor="#5A5A5A"
+                app:sliderIndicatorUnselectedColor="#FFF"
+                app:sliderScrollTimeInSec="3"
+                app:sliderStartAutoCycle="true" />
+
+
 
         </LinearLayout>
 

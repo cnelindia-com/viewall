@@ -1,9 +1,13 @@
 package com.example.viewall.activities;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -27,11 +31,14 @@ import com.example.viewall.adapters.HomeCategoryAdapter;
 import com.example.viewall.adapters.PopularVideoHomeAdapter;
 import com.example.viewall.broadcastrecivers.NetworkReceiver;
 import com.example.viewall.models.bannerlist.BannerResponse;
+import com.example.viewall.models.databasemodels.TableBannerModel;
+import com.example.viewall.models.databasemodels.TableOfflineModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 import com.example.viewall.models.homecategorylist.DataItem;
 import com.example.viewall.models.homecategorylist.HomeCategoryResponse;
 import com.example.viewall.models.index.IndexResponse;
 import com.example.viewall.models.index1.Index1Response;
+import com.example.viewall.models.offlineupdate.OfflineDataResponse;
 import com.example.viewall.models.popularviedos.PopularVideoResponse;
 import com.example.viewall.serviceapi.RetrofitClient;
 import com.example.viewall.utils.DatabaseHandler;
@@ -39,12 +46,20 @@ import com.example.viewall.utils.SharePrefrancClass;
 import com.google.android.material.navigation.NavigationView;
 import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawController;
 import com.smarteist.autoimageslider.SliderView;
+import com.tonyodev.fetch2.Error;
+import com.tonyodev.fetch2.Fetch;
+import com.tonyodev.fetch2.FetchConfiguration;
+import com.tonyodev.fetch2.NetworkType;
+import com.tonyodev.fetch2.Priority;
+import com.tonyodev.fetch2.Request;
+import com.tonyodev.fetch2core.Func;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -79,6 +94,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     TextView userNameTxtId;
     int myImageList[] = {R.drawable.addicon, R.drawable.banner2, R.drawable.banner1};
 
+    //List which contain all offline data
+    List<TableOfflineModel> listOfflineData;
+
     ArrayList<DataItem> listCategory;
     HomeCategoryAdapter homeCategoryAdapter;
 
@@ -89,7 +107,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     DatabaseHandler databaseHandler;
 
-    String fileToDownload;
+
+
+    private static final int REQ_CODE = 1;
+
+    //Creating reference variable of fetch
+    private Fetch fetch;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -112,9 +135,34 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(HomeActivity.this, DownloanActivity.class));
         }*/
 
+        //Configuring fetch
+        FetchConfiguration fetchConfiguration = new FetchConfiguration.Builder(this)
+                .setDownloadConcurrentLimit(3)
+                .build();
+
+        fetch = Fetch.Impl.getInstance(fetchConfiguration);
+
         //Code for create folder
         File dir = new File(Environment.getExternalStorageDirectory() + "/Download/view4all/");
         dir.mkdirs(); // creates needed dirs
+
+        //code for permission.
+        if (ActivityCompat.checkSelfPermission(HomeActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(HomeActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            }, REQ_CODE);
+        } else {
+            /*Toast.makeText(VideoShowActivity.this, "Permission Granted.", Toast.LENGTH_SHORT).show();*/
+//                    startActivity(new Intent(VideoShowActivity.this, SyncDataActivity.class));
+            /*callDownload();*/
+            //Code for create folder
+            /*File dir = new File(Environment.getExternalStorageDirectory() + "/Download/view4all/");
+            dir.mkdirs(); // creates needed dirs*/
+        }
 
         databaseHandler = new DatabaseHandler(this);
 
@@ -122,6 +170,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         /*databaseHandler.getAllVideoData();
         List<VideoModel> data = databaseHandler.getAllVideoData();*/
         /*Toast.makeText(HomeActivity.this, data.get(0).getVideoUrl(), Toast.LENGTH_SHORT).show();*/
+
+        //Code to get the data from offline table
+        listOfflineData = databaseHandler.getAddOffTableData();
 
         NetworkReceiver networkReceiver = new NetworkReceiver();
         registerReceiver(networkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -300,6 +351,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         //Calling popular api.
         callPopularVideoApi();
 
+        //Calling api for send offline data to server
+        callSendOfflineDataApi(listOfflineData);
+
     }
 
     private void callBannerListApi() {
@@ -326,6 +380,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         /*bannerUrl = bannerUrl + ", " + tempStr;*/
                         //Calling index1 api
                         callIndex1Api(tempStr);
+
+                        //Call the download function for download the banner image
+                        callBannerDownload(tempStr, bannerList.get(i).getImageUrl());
                     }
 
 
@@ -395,6 +452,30 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Log.d("index1fail", t.getMessage());
             }
         });
+    }
+
+    //Test method for send offline data to api
+    private void callSendOfflineDataApi(List<TableOfflineModel> list) {
+        progressDialog.show();
+
+        Call<OfflineDataResponse> call = RetrofitClient.getInstance().getMyApi().offlineWatch(
+                list /*"Mohit rajawat test api test"*/);
+        call.enqueue(new Callback<OfflineDataResponse>() {
+            @Override
+            public void onResponse(Call<OfflineDataResponse> call, Response<OfflineDataResponse> response) {
+                if (response.body() != null) {
+                    Log.d("offlineapires", response.body().getMessage());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OfflineDataResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.d("offlineapifail", t.getMessage());
+            }
+        });
+
     }
 
     private void callIndexApi() {
@@ -504,5 +585,54 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        switch (requestCode) {
+            case REQ_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //permission granted
+                    /*Toast.makeText(this, "Request permission method", Toast.LENGTH_SHORT).show();*/
+                    /*startActivity(new Intent(VideoShowActivity.this, SyncDataActivity.class));*/
+//                    callDownload();
+                } else {
+                    finishAffinity();
+                }
+                break;
+        }
+    }
+
+    private void callBannerDownload(String bannerName, String bannerUrl) {
+        //Below code for create new folder in the download directory
+        String folder_main = "AddBanners";
+        File f = new File(Environment.getExternalStorageDirectory(), folder_main);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+
+        String fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + folder_main + "/" + bannerName  /*+ ".mp4"*/ /*strVideoName*/;
+
+        final Request request = new Request(bannerUrl, fileToDownload);
+        request.setPriority(Priority.HIGH);
+        request.setNetworkType(NetworkType.ALL);
+        request.addHeader("clientKey", "SD78DF93_3947&MVNGHE1WONG");
+
+        fetch.enqueue(request, new Func<Request>() {
+            @Override
+            public void call(@NonNull Request result) {
+                /*Toast.makeText(HomeActivity.this, "Successful", Toast.LENGTH_SHORT).show();*/
+                /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));*/
+                /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId,
+                        strVideoTime));*/
+                databaseHandler.addBannerData(new TableBannerModel(bannerName,
+                        fileToDownload));
+            }
+        }, new Func<Error>() {
+            @Override
+            public void call(@NonNull Error result) {
+                /*Toast.makeText(HomeActivity.this, result.toString(), Toast.LENGTH_SHORT).show();*/
+            }
+        });
+    }
 }

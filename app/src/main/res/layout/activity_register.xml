@@ -103,9 +103,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="10dp"
-                android:hint="Number"
+                android:hint="Cell Phone Number"
                 android:singleLine="true"
-                android:inputType="number" />
+                android:inputType="phone" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--<com.google.android.material.textfield.TextInputLayout

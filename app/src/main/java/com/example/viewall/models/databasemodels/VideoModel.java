@@ -6,6 +6,14 @@ public class VideoModel {
     String name;
     String videoUrl;
     String videoId;
+    String videotime;
+
+    public VideoModel(String name, String videoUrl, String videoId, String videotime) {
+        this.name = name;
+        this.videoUrl = videoUrl;
+        this.videoId = videoId;
+        this.videotime = videotime;
+    }
 
     public VideoModel(String name, String videoUrl, String videoId) {
         this.name = name;
@@ -25,6 +33,14 @@ public class VideoModel {
         this._id = _id;
         this.name = name;
         this.videoUrl = videoUrl;
+    }
+
+    public String getVideotime() {
+        return videotime;
+    }
+
+    public void setVideotime(String videotime) {
+        this.videotime = videotime;
     }
 
     public String getVideoId() {
