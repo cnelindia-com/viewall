@@ -78,7 +78,7 @@ import retrofit2.Response;
 
 public class VideoShowActivity extends AppCompatActivity {
 
-    ImageView imgBack;
+    ImageView imgBack, toolbarImgId;
     Intent getData;
     String strVideoId, strChannelName;
     ProgressDialog progressDialog;
@@ -176,11 +176,21 @@ public class VideoShowActivity extends AppCompatActivity {
         txtChannelNameId.setText(strChannelName);
 
         imgBack = findViewById(R.id.imgBack);
+        toolbarImgId = findViewById(R.id.toolbarImgId);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(VideoShowActivity.this, SportsActivity.class));
+            }
+        });
+
+        toolbarImgId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(VideoShowActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
 
@@ -517,7 +527,8 @@ public class VideoShowActivity extends AppCompatActivity {
     }
 
     private void callWatch1Api() {
-        Call<Watch1Response> call = RetrofitClient.getInstance().getMyApi().watch1(strVideoId,
+        Call<Watch1Response> call = RetrofitClient.getInstance().getMyApi().watch1(/*strVideoId*/
+                strAddVideoNameToStore,
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"));
 

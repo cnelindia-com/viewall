@@ -38,7 +38,7 @@ import retrofit2.Response;
 public class SportsActivity extends AppCompatActivity {
 
     LinearLayout idiskLayoutId, soccerlifeLayoutId, soccerLayoutId, cricketLayoutId;
-    ImageView img1, imgBack, imgCatHeaderId;
+    ImageView img1, imgBack, imgCatHeaderId, toolbarImgId;
     TextView categoryNameId;
     String strCatName, strCatId;
     Intent getData;
@@ -83,6 +83,7 @@ public class SportsActivity extends AppCompatActivity {
         categoryNameId.setText(strCatName);
 
         imageSliderCat = findViewById(R.id.imageSliderCat);
+        toolbarImgId = findViewById(R.id.toolbarImgId);
         /*imageSliderCat.setSliderAdapter(new HomeAddSliderAdapter(myImageList, SportsActivity.this));
         imageSliderCat.startAutoCycle();*/
 
@@ -92,6 +93,14 @@ public class SportsActivity extends AppCompatActivity {
         //Calling banner api.
         callBannerListApi();
 
+        toolbarImgId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SportsActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
