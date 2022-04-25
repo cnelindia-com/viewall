@@ -325,42 +325,42 @@
                             android:layout_width="80dp"
                             android:layout_height="70dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/img1" />
+                             />
 
                         <ImageView
                             android:layout_width="80dp"
                             android:layout_height="70dp"
                             android:layout_marginLeft="5dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/img2" />
+                             />
 
                         <ImageView
                             android:layout_width="80dp"
                             android:layout_height="70dp"
                             android:layout_marginLeft="5dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/img3" />
+                             />
 
                         <ImageView
                             android:layout_width="80dp"
                             android:layout_height="70dp"
                             android:layout_marginLeft="5dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/img4" />
+                             />
 
                         <ImageView
                             android:layout_width="80dp"
                             android:layout_height="70dp"
                             android:layout_marginLeft="5dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/img5" />
+                             />
 
                         <!--<ImageView
                             android:layout_width="80dp"
                             android:layout_height="70dp"
                             android:layout_marginLeft="5dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/img6" />-->
+                             />-->
 
                     </LinearLayout>
 

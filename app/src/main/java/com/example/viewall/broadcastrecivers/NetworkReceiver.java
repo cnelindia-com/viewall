@@ -17,7 +17,7 @@ public class NetworkReceiver extends BroadcastReceiver {
         } else {
             Toast.makeText(context, "Not connected to Internet", Toast.LENGTH_SHORT).show();
             GlobalApplication.getAppContext().startActivity(new Intent(GlobalApplication.getAppContext(),
-                    DownloanActivity.class));
+                    DownloanActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
 
 

@@ -213,11 +213,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         icn_hamburger = findViewById(R.id.icn_hamburger);
         img1 = findViewById(R.id.img1);
 
-        int popularImages[] = {R.drawable.img1,
+        /*int popularImages[] = {R.drawable.img1,
                 R.drawable.img2,
                 R.drawable.img3,
                 R.drawable.img4,
-                R.drawable.img5};
+                R.drawable.img5};*/
 
 
         imageSlider.setOnScrollChangeListener(new View.OnScrollChangeListener() {

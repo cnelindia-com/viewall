@@ -189,28 +189,28 @@
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img1" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img2" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img3" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img4" />
+                         />
 
                 </LinearLayout>
 
@@ -251,28 +251,28 @@
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img4" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img3" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img2" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img1" />
+                         />
 
 
                 </LinearLayout>
@@ -314,28 +314,28 @@
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img1" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img3" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img2" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img4" />
+                         />
 
                 </LinearLayout>
 
@@ -375,28 +375,28 @@
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img2" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img4" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img1" />
+                         />
 
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:layout_marginLeft="5dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/img3" />
+                         />
 
                 </LinearLayout>
 
