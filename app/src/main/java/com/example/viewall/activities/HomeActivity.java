@@ -92,7 +92,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     PopularVideoHomeAdapter popularVideoHomeAdapter;
     SliderView imageSlider;
     TextView userNameTxtId;
-    int myImageList[] = {R.drawable.addicon, R.drawable.banner2, R.drawable.banner1};
+    /*int myImageList[] = {R.drawable.addicon, R.drawable.banner2, R.drawable.banner1};*/
 
     //List which contain all offline data
     List<TableOfflineModel> listOfflineData;

@@ -188,7 +188,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:scaleType="fitXY"
-                android:src="@drawable/icnplay" />
+                />
 
             <ImageView
                 android:id="@+id/imgDownloadId"
@@ -210,7 +210,6 @@
 
             <ImageView
                 android:visibility="gone"
-                android:src="@drawable/addicon"
                 android:scaleType="fitXY"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

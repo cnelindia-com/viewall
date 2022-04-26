@@ -47,7 +47,7 @@ public class SportsActivity extends AppCompatActivity {
     ArrayList<DataItem> listData;
     ArrayList<HeaderItem> listHeader;
 
-    int myImageList[] = {R.drawable.addicon, R.drawable.banner2, R.drawable.banner1};
+    /*int myImageList[] = {R.drawable.addicon, R.drawable.banner2, R.drawable.banner1};*/
     SingleCategoryAdapter singleCategoryAdapter;
     SliderView imageSliderCat;
 
