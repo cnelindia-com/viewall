@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.viewall.R;
 import com.example.viewall.activities.VideoShowActivity;
+import com.example.viewall.models.databasemodels.AddVideoModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 import com.example.viewall.models.singlecategorylist.DataItem;
 import com.example.viewall.models.singlecategorylist.HeaderItem;
@@ -33,6 +34,7 @@ import com.tonyodev.fetch2.Request;
 import com.tonyodev.fetch2core.DownloadBlock;
 import com.tonyodev.fetch2core.Func;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
     ArrayList<HeaderItem> listHeader;
 
     String fileToDownload;
-    String strVideoUrlForDownload, strVideoName;
+    String strVideoUrlForDownload, strVideoName, strAdVideoUrlForDownload, strAdVideoNameToStore;
 
     DatabaseHandler databaseHandler;
 
@@ -89,8 +91,6 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
 
 
 
-
-
         Glide.with(context)
                 .load(dataItem.getImageUrl())
                 .placeholder(R.drawable.mainlogo)
@@ -114,13 +114,20 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
                 strVideoId = dataItem.getId();
                 strVideoTime = dataItem.getTime();
                 strVideoUrlForDownload = dataItem.getUrlVideo();
+                strAdVideoUrlForDownload = dataItem.getAddUrlVideo();
 
                 strVideoName = dataItem.getUrlVideo()
                         .replace("http://dev.view4all.tv/content/", "");
 
+                strAdVideoNameToStore = dataItem.getAddUrlVideo()
+                        .replace("http://dev.view4all.tv/content/", "");
+
+                //Call advert download method here
+                callDownloadAdvt();
+
                 //Call download method here
-                callDownload(dataItem.getDescription().getName(), dataItem.getId(),
-                        dataItem.getTime());
+                /*callDownload(dataItem.getDescription().getName(), dataItem.getId(),
+                        dataItem.getTime());*/
             }
         });
     }
@@ -145,6 +152,45 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
             rootLayoutSingleId = itemView.findViewById(R.id.rootLayoutSingleId);
         }
     }
+
+    //Method for call download advt videos
+    private void callDownloadAdvt() {
+        //Below code for create new folder in the download directory
+        String folder_main = "AddVideos";
+        File f = new File(Environment.getExternalStorageDirectory(), folder_main);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+
+        fileToDownload = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + folder_main + "/" + strAdVideoNameToStore  /*+ ".mp4"*/ /*strVideoName*/;
+        /*fileToDownload = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + strAddVideoNameToStore  *//*+ ".mp4"*//* *//*strVideoName*//*;*/
+
+
+        final Request request = new Request(strAdVideoUrlForDownload, fileToDownload);
+        request.setPriority(Priority.HIGH);
+        request.setNetworkType(NetworkType.ALL);
+        request.addHeader("clientKey", "SD78DF93_3947&MVNGHE1WONG");
+
+        fetch.enqueue(request, new Func<Request>() {
+            @Override
+            public void call(@NonNull Request result) {
+                /*Toast.makeText(context, "Successful", Toast.LENGTH_SHORT).show();*/
+                //Code for save data in the database
+                /*databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload));*/
+                databaseHandler.addDataToAd(new AddVideoModel(fileToDownload, strAdVideoNameToStore));
+
+
+                //Call download method here
+                callDownload("", "", "");
+            }
+        }, new Func<Error>() {
+            @Override
+            public void call(@NonNull Error result) {
+                Toast.makeText(context, result.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     //Method for call the download function
     private void callDownload(String dbVideoName, String videoId, String videoTime) {

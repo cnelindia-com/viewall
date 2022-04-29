@@ -51,6 +51,8 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
         VideoModel videoModel = list.get(position);
         AddVideoModel adVideoModel = adList.get(position);
 
+
+
         holder.videoNameId.setText(videoModel.getName());
         holder.videoUrlId.setText(videoModel.getVideoUrl());
 

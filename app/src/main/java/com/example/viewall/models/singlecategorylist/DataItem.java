@@ -25,6 +25,9 @@ public class DataItem{
 	@SerializedName("category_id")
 	private String categoryId;
 
+	@SerializedName("add_url_video")
+	private String addUrlVideo;
+
 	@SerializedName("date_entered")
 	private String dateEntered;
 
@@ -105,6 +108,10 @@ public class DataItem{
 
 	public String getCategoryId(){
 		return categoryId;
+	}
+
+	public String getAddUrlVideo(){
+		return addUrlVideo;
 	}
 
 	public String getDateEntered(){
