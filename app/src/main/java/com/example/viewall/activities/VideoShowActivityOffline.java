@@ -1,6 +1,7 @@
 package com.example.viewall.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
@@ -9,8 +10,10 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,6 +45,7 @@ public class VideoShowActivityOffline extends AppCompatActivity {
     DatabaseHandler databaseHandler;
     List<TableBannerModel> offlineBannerData;
     SliderView imageSlider;
+    ImageView imgBack, toolbarImgId, icn_hamburger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +55,53 @@ public class VideoShowActivityOffline extends AppCompatActivity {
         Window window = getWindow();
         window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
 
+        imgBack = findViewById(R.id.imgBack);
+        toolbarImgId = findViewById(R.id.toolbarImgId);
+        icn_hamburger = findViewById(R.id.icn_hamburger);
+
         progressbarVideo = findViewById(R.id.progressbarVideo);
         txtVideoName = findViewById(R.id.txtVideoName);
         imageSlider = findViewById(R.id.imageSlider);
 
         databaseHandler = new DatabaseHandler(this);
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(VideoShowActivityOffline.this, DownloanActivity.class));
+            }
+        });
+
+        toolbarImgId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(VideoShowActivityOffline.this, DownloanActivity.class));
+            }
+        });
+
+        icn_hamburger.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Creating the instance of Popupmenu
+                PopupMenu popupMenu = new PopupMenu(VideoShowActivityOffline.this, view);
+                //Inflating the Popup using xml file
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+
+                //registering popup with OnMenuItemClickListener
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.term_item) {
+                            startActivity(new Intent(VideoShowActivityOffline.this, TermConditionsActivity.class));
+                        } else if (item.getItemId() == R.id.contact_item) {
+                            startActivity(new Intent(VideoShowActivityOffline.this, ContactUsActivity.class));
+                        }
+                        return true;
+                    }
+                });
+                popupMenu.show(); //showing popup menu
+            }
+        });
 
         Intent intent = getIntent();
         strVideoUrlOff = intent.getStringExtra("videoUrlOffline");

@@ -4,6 +4,4 @@
         android:title="Terms and Conditions" />
     <item android:id="@+id/contact_item"
         android:title="Contact Us" />
-    <item android:id="@+id/download_item"
-        android:title="Downloads"/>
 </menu>
