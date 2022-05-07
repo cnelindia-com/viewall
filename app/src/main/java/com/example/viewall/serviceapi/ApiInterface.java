@@ -218,7 +218,6 @@ public interface ApiInterface {
                                      @Query("contact_id") String contact_id);
 
     //http://dev.view4all.tv/API/api.php?action=offline_watch_data
-    @NonNull
     @Multipart
     @POST("api.php?action=offline_watch_data")
     Call<OfflineDataResponse> offlineWatch(@Part("offline_data[]") List<TableOfflineModel> contact_list

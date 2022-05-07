@@ -820,7 +820,7 @@ public class VideoShowActivity extends AppCompatActivity {
             //This method is called first time when download the file
             Toast.makeText(VideoShowActivity.this, "First download", Toast.LENGTH_SHORT).show();
             databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId,
-                    strVideoTime));
+                    strVideoTime, strChannelName));
         }
 
         @Override

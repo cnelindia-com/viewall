@@ -7,6 +7,15 @@ public class VideoModel {
     String videoUrl;
     String videoId;
     String videotime;
+    String catname;
+
+    public VideoModel(String name, String videoUrl, String videoId, String videotime, String catname) {
+        this.name = name;
+        this.videoUrl = videoUrl;
+        this.videoId = videoId;
+        this.videotime = videotime;
+        this.catname = catname;
+    }
 
     public VideoModel(String name, String videoUrl, String videoId, String videotime) {
         this.name = name;
@@ -33,6 +42,14 @@ public class VideoModel {
         this._id = _id;
         this.name = name;
         this.videoUrl = videoUrl;
+    }
+
+    public String getCatname() {
+        return catname;
+    }
+
+    public void setCatname(String catname) {
+        this.catname = catname;
     }
 
     public String getVideotime() {

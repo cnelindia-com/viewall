@@ -43,7 +43,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + "name" + " TEXT,"
                 + "path" + " TEXT,"
                 + "videoid" + " TEXT,"
-                + "videotime" + " TEXT"
+                + "videotime" + " TEXT,"
+                + "catname" + " TEXT"
                 + ")";
 
         String CREATE_VIDEOS_ADD_TABLE = "CREATE TABLE " + TABLE_VIDEOS_ADD +
@@ -166,6 +167,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("path", videoUrl.getVideoUrl());
         values.put("videoid", videoUrl.getVideoId());
         values.put("videotime", videoUrl.getVideotime());
+        values.put("catname", videoUrl.getCatname());
 
         //Inserting Row
         db.insert(TABLE_VIDEOS, null, values);
@@ -312,6 +314,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 videoModel.setVideoUrl(cursor.getString(2));
                 videoModel.setVideoId(cursor.getString(3));
                 videoModel.setVideotime(cursor.getString(4));
+                videoModel.setCatname(cursor.getString(5));
 
                 //Adding videomodel to list
                 videosData.add(videoModel);

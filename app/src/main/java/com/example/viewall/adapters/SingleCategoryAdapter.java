@@ -45,7 +45,8 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
     ArrayList<HeaderItem> listHeader;
 
     String fileToDownload;
-    String strVideoUrlForDownload, strVideoName, strAdVideoUrlForDownload, strAdVideoNameToStore;
+    String strVideoUrlForDownload, strVideoName, strAdVideoUrlForDownload, strAdVideoNameToStore,
+    strChannelName;
 
     DatabaseHandler databaseHandler;
 
@@ -115,6 +116,7 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
                 strVideoTime = dataItem.getTime();
                 strVideoUrlForDownload = dataItem.getUrlVideo();
                 strAdVideoUrlForDownload = dataItem.getAddUrlVideo();
+                strChannelName = headerItem.getName();
 
                 strVideoName = dataItem.getUrlVideo()
                         .replace("http://dev.view4all.tv/content/", "");
@@ -230,7 +232,7 @@ public class SingleCategoryAdapter extends RecyclerView.Adapter<SingleCategoryAd
             //This method is called first time when download the file
             Toast.makeText(context, "First download", Toast.LENGTH_SHORT).show();
             databaseHandler.addData(new VideoModel(strDbVideoName, fileToDownload, strVideoId,
-                    strVideoTime));
+                    strVideoTime, strChannelName));
         }
 
         @Override
