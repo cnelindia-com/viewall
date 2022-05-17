@@ -54,7 +54,7 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
 
 
         holder.videoNameId.setText(videoModel.getName());
-        holder.videoUrlId.setText(videoModel.getVideoUrl());
+        holder.catNameTxtId.setText(videoModel.getCatname());
 
         holder.rootLayoutId.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,16 +78,21 @@ public class OfflineVideoAdapter extends RecyclerView.Adapter<OfflineVideoAdapte
         return list.size();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
     public class OfflineViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout rootLayoutId;
-        TextView videoNameId, videoUrlId;
+        TextView videoNameId, catNameTxtId;
 
         public OfflineViewHolder(@NonNull View itemView) {
             super(itemView);
             rootLayoutId = itemView.findViewById(R.id.rootLayoutId);
             videoNameId = itemView.findViewById(R.id.videoNameId);
-            videoUrlId = itemView.findViewById(R.id.videoUrlId);
+            catNameTxtId = itemView.findViewById(R.id.catNameTxtId);
         }
     }
 }

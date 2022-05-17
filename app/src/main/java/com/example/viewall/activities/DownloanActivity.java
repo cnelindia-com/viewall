@@ -4,17 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.view.Window;
-
 import com.example.viewall.R;
 import com.example.viewall.adapters.OfflineVideoAdapter;
 import com.example.viewall.models.databasemodels.AddVideoModel;
 import com.example.viewall.models.databasemodels.TableBannerModel;
 import com.example.viewall.models.databasemodels.VideoModel;
 import com.example.viewall.utils.DatabaseHandler;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DownloanActivity extends AppCompatActivity {
@@ -26,6 +25,8 @@ public class DownloanActivity extends AppCompatActivity {
 
     RecyclerView downloadRec;
     OfflineVideoAdapter offlineVideoAdapter;
+
+    HashMap<String, VideoModel> myMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
