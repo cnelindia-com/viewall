@@ -682,7 +682,7 @@ public class VideoShowActivity extends AppCompatActivity {
             videoView.start();
 
 
-            //Calling watch1 api when ad video start
+            //Calling watch1 api when ad video start first
             callWatch1Api();
 
             //Calling watch2 api when ad video start
