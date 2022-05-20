@@ -123,6 +123,10 @@ public class VideoShowActivity extends AppCompatActivity {
         Window window = getWindow();
         window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
 
+        //Saving the current page name in the prefrence
+        SharePrefrancClass.getInstance(VideoShowActivity.this).savePref("fromActivity",
+                "");
+
         imageSlider = findViewById(R.id.imageSlider);
 
         databaseHandler = new DatabaseHandler(this);
@@ -370,7 +374,8 @@ public class VideoShowActivity extends AppCompatActivity {
     private void callWatchApi(/*String catName, String catId*/) {
         Call<WatchResponse> call = RetrofitClient.getInstance().getMyApi().watchApi(/*catName*/strVideoId,
                 strPhoneNumber,
-                strVideoId);
+                strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<WatchResponse>() {
             @Override
@@ -400,7 +405,8 @@ public class VideoShowActivity extends AppCompatActivity {
         Call<WatchAdvertResponse> call = RetrofitClient.getInstance().getMyApi().watchAdvert(
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
                 imageName,
-                strVideoId
+                strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity")
         );
 
         call.enqueue(new Callback<WatchAdvertResponse>() {
@@ -421,7 +427,8 @@ public class VideoShowActivity extends AppCompatActivity {
     private void callWatchMarker() {
         Call<WatchMarkerResponse> call = RetrofitClient.getInstance().getMyApi().watchMarker("123",
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
-                strVideoId);
+                strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<WatchMarkerResponse>() {
             @Override
@@ -441,7 +448,8 @@ public class VideoShowActivity extends AppCompatActivity {
     private void callWatch5Api() {
         Call<Watch5Response> call = RetrofitClient.getInstance().getMyApi().watch5("123",
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
-                strVideoId);
+                strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<Watch5Response>() {
             @Override
@@ -459,10 +467,12 @@ public class VideoShowActivity extends AppCompatActivity {
     }
 
     private void callWatch4Api() {
-        Call<Watch4Response> call = RetrofitClient.getInstance().getMyApi().watch4(/*strAddVideoId*/strChannelName,
+        Call<Watch4Response> call = RetrofitClient.getInstance().getMyApi().watch4(/*strAddVideoId*/
+                strChannelName,
                 "123",
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
-                strVideoId);
+                strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<Watch4Response>() {
             @Override
@@ -485,7 +495,8 @@ public class VideoShowActivity extends AppCompatActivity {
                 strAddVideoNameToStore,
                 "123",
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
-                strVideoId);
+                strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<Watch3Response>() {
             @Override
@@ -508,7 +519,8 @@ public class VideoShowActivity extends AppCompatActivity {
                 strAddVideoNameToStore,
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"),
-                "123");
+                "123",
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<Watch2Response>() {
             @Override
@@ -530,7 +542,8 @@ public class VideoShowActivity extends AppCompatActivity {
         Call<Watch1Response> call = RetrofitClient.getInstance().getMyApi().watch1(/*strVideoId*/
                 strAddVideoNameToStore,
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("phone_number"),
-                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"));
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"),
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<Watch1Response>() {
             @Override
@@ -550,7 +563,8 @@ public class VideoShowActivity extends AppCompatActivity {
     private void callSingleVideoApi() {
         progressDialog.show();
 
-        Call<SingleVideoResponse> call = RetrofitClient.getInstance().getMyApi().singleVideo(strVideoId);
+        Call<SingleVideoResponse> call = RetrofitClient.getInstance().getMyApi().singleVideo(strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<SingleVideoResponse>() {
             @Override
@@ -634,7 +648,8 @@ public class VideoShowActivity extends AppCompatActivity {
 
         Call<SeenVideoResponse> call = RetrofitClient.getInstance().getMyApi().showWatchVideo(SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("id"),
                 SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("catIdFromHome"),
-                strVideoId);
+                strVideoId,
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<SeenVideoResponse>() {
             @Override
@@ -779,7 +794,9 @@ public class VideoShowActivity extends AppCompatActivity {
     private void callBannerListApi() {
         progressDialog.show();
 
-        Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList();
+        Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList(
+                SharePrefrancClass.getInstance(VideoShowActivity.this).getPref("fromActivity")
+        );
 
         call.enqueue(new Callback<BannerResponse>() {
             @Override
@@ -887,4 +904,12 @@ public class VideoShowActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //Saving the current page name in the prefrence
+        SharePrefrancClass.getInstance(VideoShowActivity.this).savePref("fromActivity",
+                "http://dev.view4all.tv/watch/" + strVideoId + "/");
+    }
 }

@@ -79,6 +79,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Query;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -134,6 +135,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(HomeActivity.this, "you are offline", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, DownloanActivity.class));
         }*/
+
+        //Saving the current page name in the prefrence
+        /*SharePrefrancClass.getInstance(HomeActivity.this).savePref("fromActivity",
+                "index_app_page");*/
 
         //Configuring fetch
         FetchConfiguration fetchConfiguration = new FetchConfiguration.Builder(this)
@@ -359,7 +364,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void callBannerListApi() {
         progressDialog.show();
 
-        Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList();
+        Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList(
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("fromActivity")
+        );
 
         call.enqueue(new Callback<BannerResponse>() {
             @Override
@@ -400,7 +407,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void callPopularVideoApi() {
         progressDialog.show();
 
-        Call<PopularVideoResponse> call = RetrofitClient.getInstance().getMyApi().popularVideos();
+        Call<PopularVideoResponse> call = RetrofitClient.getInstance().getMyApi().popularVideos(
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("fromActivity")
+        );
 
         call.enqueue(new Callback<PopularVideoResponse>() {
             @Override
@@ -435,7 +444,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         Call<Index1Response> call = RetrofitClient.getInstance().getMyApi().index1(
                 SharePrefrancClass.getInstance(HomeActivity.this).getPref("phone_number"),
-                imageName);
+                imageName,
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<Index1Response>() {
             @Override
@@ -482,7 +492,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         progressDialog.show();
 
         Call<IndexResponse> call = RetrofitClient.getInstance().getMyApi().index(
-                SharePrefrancClass.getInstance(HomeActivity.this).getPref("phone_number"));
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("phone_number"),
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<IndexResponse>() {
             @Override
@@ -504,7 +515,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private void callCategoryList() {
         progressDialog.show();
-        Call<HomeCategoryResponse> call = RetrofitClient.getInstance().getMyApi().homeCategory();
+        Call<HomeCategoryResponse> call = RetrofitClient.getInstance().getMyApi().homeCategory(
+                SharePrefrancClass.getInstance(HomeActivity.this).getPref("fromActivity")
+        );
 
         call.enqueue(new Callback<HomeCategoryResponse>() {
             @Override
@@ -634,5 +647,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 /*Toast.makeText(HomeActivity.this, result.toString(), Toast.LENGTH_SHORT).show();*/
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //Saving the current page name in the prefrence
+        SharePrefrancClass.getInstance(HomeActivity.this).savePref("fromActivity",
+                "http://dev.view4all.tv/index");
     }
 }

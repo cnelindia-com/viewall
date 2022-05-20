@@ -115,7 +115,10 @@ public class HomeCategoryAdapter extends RecyclerView.Adapter<HomeCategoryAdapte
     }
 
     private void callWatchApi(String catName, String catId){
-        Call<WatchResponse> call = RetrofitClient.getInstance().getMyApi().watchApi(/*catName*/catId, strPhoneNumber, catId);
+        Call<WatchResponse> call = RetrofitClient.getInstance().getMyApi().watchApi(/*catName*/catId,
+                strPhoneNumber,
+                catId,
+                SharePrefrancClass.getInstance(context).getPref("fromActivity"));
 
         call.enqueue(new Callback<WatchResponse>() {
             @Override

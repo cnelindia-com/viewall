@@ -67,27 +67,29 @@ public interface ApiInterface {
     //http://dev.view4all.tv/API/api.php?action=getallcategory
     @NonNull
     @GET("api.php?action=getallcategory")
-    Call<HomeCategoryResponse> homeCategory();
+    Call<HomeCategoryResponse> homeCategory(@Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=getsinglecategory&id=0e3b2725-de08-44c0-a47a-eccb94bd77d9&=
     @NonNull
     @GET("api.php?action=getsinglecategory")
-    Call<SingleCategoryResponse> singleCategory(@Query("id") String id);
+    Call<SingleCategoryResponse> singleCategory(@Query("id") String id,
+                                                @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=getalladvertimage
     @NonNull
     @GET("api.php?action=getalladvertimage")
-    Call<BannerResponse> bannerList();
+    Call<BannerResponse> bannerList(@Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=getallvideos
     @NonNull
     @GET("api.php?action=getallvideos")
-    Call<PopularVideoResponse> popularVideos();
+    Call<PopularVideoResponse> popularVideos(@Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=getsinglevideo&id=154fe4de-f06c-4bbf-86fd-513fca0091ab&=
     @NonNull
     @GET("api.php?action=getsinglevideo")
-    Call<SingleVideoResponse> singleVideo(@Query("id") String id);
+    Call<SingleVideoResponse> singleVideo(@Query("id") String id,
+                                          @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=getuser&&id=bfc6c4339390eaa33f032f8fc8e96c35
     @NonNull
@@ -121,12 +123,14 @@ public interface ApiInterface {
     @POST("api.php?action=get_watch_video_list")
     Call<SeenVideoResponse> showWatchVideo(@Query("user_id") String user_id,
                                            @Query("channel_id") String channel_id,
-                                           @Query("current_video_id") String current_video_id);
+                                           @Query("current_video_id") String current_video_id,
+                                           @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=index
     @NonNull
     @POST("api.php?action=index")
-    Call<IndexResponse> index(@Query("contact_id") String contact_id);
+    Call<IndexResponse> index(@Query("contact_id") String contact_id,
+                              @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=advert
     @NonNull
@@ -145,26 +149,30 @@ public interface ApiInterface {
     @POST("api.php?action=watch")
     Call<WatchResponse> watchApi(@Query("channel_name") String channel_name,
                                  @Query("contact_id") String contact_id,
-                                 @Query("channel_id") String channel_id);
+                                 @Query("channel_id") String channel_id,
+                                 @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=index1
     @NonNull
     @POST("api.php?action=index1")
     Call<Index1Response> index1(@Query("contact_id") String contact_id,
-                                @Query("banner") String banner);
+                                @Query("banner") String banner,
+                                @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=channel_1
     @NonNull
     @POST("api.php?action=channel_1")
     Call<Channel1Response> channel1(@Query("banner") String banner,
-                                    @Query("contact_id") String contact_id);
+                                    @Query("contact_id") String contact_id,
+                                    @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=watch1
     @NonNull
     @POST("api.php?action=watch1")
     Call<Watch1Response> watch1(@Query("video_id") String video_id,
                                 @Query("contact_id") String contact_id,
-                                @Query("channel_id") String channel_id);
+                                @Query("channel_id") String channel_id,
+                                @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=watch2
     @NonNull
@@ -172,7 +180,8 @@ public interface ApiInterface {
     Call<Watch2Response> watch2(@Query("ad_id") String ad_id,
                                 @Query("contact_id") String contact_id,
                                 @Query("channel_id") String channel_id,
-                                @Query("ip") String ip);
+                                @Query("ip") String ip,
+                                @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=watch3
     @NonNull
@@ -180,7 +189,8 @@ public interface ApiInterface {
     Call<Watch3Response> watch3(@Query("ad_id") String ad_id,
                                 @Query("ip") String ip,
                                 @Query("contact_id") String contact_id,
-                                @Query("video_id") String video_id);
+                                @Query("video_id") String video_id,
+                                @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=watch4
     @NonNull
@@ -188,28 +198,32 @@ public interface ApiInterface {
     Call<Watch4Response> watch4(@Query("channel_name") String channel_name,
                                 @Query("ip") String ip,
                                 @Query("contact_id") String contact_id,
-                                @Query("video_id") String video_id);
+                                @Query("video_id") String video_id,
+                                @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=watch5
     @NonNull
     @POST("api.php?action=watch5")
     Call<Watch5Response> watch5(@Query("ip") String ip,
                                 @Query("contact_id") String contact_id,
-                                @Query("video_id") String video_id);
+                                @Query("video_id") String video_id,
+                                @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=marker_watch
     @NonNull
     @POST("api.php?action=marker_watch")
     Call<WatchMarkerResponse> watchMarker(@Query("ip") String ip,
                                           @Query("contact_id") String contact_id,
-                                          @Query("video_id") String video_id);
+                                          @Query("video_id") String video_id,
+                                          @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=watch_advert
     @NonNull
     @POST("api.php?action=watch_advert")
     Call<WatchAdvertResponse> watchAdvert(@Query("contact_id") String contact_id,
                                           @Query("banner") String banner,
-                                          @Query("channel_id") String channel_id);
+                                          @Query("channel_id") String channel_id,
+                                          @Query("referror") String referror);
 
     //http://dev.view4all.tv/API/api.php?action=channel
     @NonNull

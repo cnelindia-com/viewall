@@ -61,6 +61,10 @@ public class SportsActivity extends AppCompatActivity {
         Window window = getWindow();
         window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.black));
 
+        //Saving the current page name in the prefrence
+        /*SharePrefrancClass.getInstance(SportsActivity.this).savePref("fromActivity",
+                "http://dev.view4all.tv/channel/770ac6a1-2cdc-4235-8058-74d618aaaf2f/");*/
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait");
         progressDialog.setCancelable(false);
@@ -80,6 +84,7 @@ public class SportsActivity extends AppCompatActivity {
         getData = getIntent();
         strCatName = getData.getStringExtra("catName");
         strCatId = getData.getStringExtra("catId");
+
         categoryNameId.setText(strCatName);
 
         imageSliderCat = findViewById(R.id.imageSliderCat);
@@ -88,7 +93,8 @@ public class SportsActivity extends AppCompatActivity {
         imageSliderCat.startAutoCycle();*/
 
         //Calling api
-        callSingleCategoryList(strCatId);
+        callSingleCategoryList(/*strCatId*/
+        SharePrefrancClass.getInstance(SportsActivity.this).getPref("catIdFromHome"));
 
         //Calling banner api.
         callBannerListApi();
@@ -156,7 +162,8 @@ public class SportsActivity extends AppCompatActivity {
         Log.d("ChannelBANNERURL", bannerUrl);*/
 
         Call<Channel1Response> call = RetrofitClient.getInstance().getMyApi().channel1(imageName,
-                SharePrefrancClass.getInstance(SportsActivity.this).getPref("phone_number"));
+                SharePrefrancClass.getInstance(SportsActivity.this).getPref("phone_number"),
+                SharePrefrancClass.getInstance(SportsActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<Channel1Response>() {
             @Override
@@ -177,7 +184,9 @@ public class SportsActivity extends AppCompatActivity {
     private void callBannerListApi(){
         progressDialog.show();
 
-        Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList();
+        Call<BannerResponse> call = RetrofitClient.getInstance().getMyApi().bannerList(
+                SharePrefrancClass.getInstance(SportsActivity.this).getPref("fromActivity")
+        );
 
         call.enqueue(new Callback<BannerResponse>() {
             @Override
@@ -214,7 +223,9 @@ public class SportsActivity extends AppCompatActivity {
     private void callSingleCategoryList(String categoryId) {
         progressDialog.show();
 
-        Call<SingleCategoryResponse> call = RetrofitClient.getInstance().getMyApi().singleCategory(/*strCatId*/ categoryId);
+        Call<SingleCategoryResponse> call = RetrofitClient.getInstance().getMyApi().singleCategory(/*strCatId*/
+                /*categoryId*/ SharePrefrancClass.getInstance(SportsActivity.this).getPref("catIdFromHome"),
+                SharePrefrancClass.getInstance(SportsActivity.this).getPref("fromActivity"));
 
         call.enqueue(new Callback<SingleCategoryResponse>() {
             @Override
@@ -251,6 +262,24 @@ public class SportsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        callSingleCategoryList(SharePrefrancClass.getInstance(SportsActivity.this).getPref("catIdFromHome" ));
+//        callSingleCategoryList(SharePrefrancClass.getInstance(SportsActivity.this).getPref("catIdFromHome" ));
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+//        callSingleCategoryList(SharePrefrancClass.getInstance(SportsActivity.this).getPref("catIdFromHome" ));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //Saving the current page name in the prefrence
+        /*SharePrefrancClass.getInstance(SportsActivity.this).savePref("fromActivity",
+                "http://dev.view4all.tv/channel/770ac6a1-2cdc-4235-8058-74d618aaaf2f/");*/
+
+        SharePrefrancClass.getInstance(SportsActivity.this).savePref("fromActivity",
+                "http://dev.view4all.tv/channel/"+ listData.get(0).getChannelId() + "/");
     }
 }
